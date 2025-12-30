@@ -1,0 +1,360 @@
+﻿{% extends "layout.html" %}
+{% block header %}
+<div class="d-flex justify-content-between align-items-center">
+    <h1>{{ model.label }}</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':index') }}">{{ _("Admin") }}</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':list', identity=model.identity) }}">{{ model.label }}</a>
+        </li>
+        <li class="breadcrumb-item active">{{ _("Create") }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <form action="{{ request.url | safe }}" method="POST" enctype="multipart/form-data">
+                    <div class="card-header">
+                        <div class="container-fluid">
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <h3 class="card-title">{{ _("New %(name)s", name=model.name ) }}</h3>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+                    <!--                         <div class="card-footer text-black">
+                            <div class="btn-list ms-auto justify-content-end">
+                                <a href="{{ url_for(__name__ ~ ':list', identity=model.identity) }}"
+                                   class="btn btn-danger">{{ _("Cancel") }}</a>
+
+                                <button type="submit" class="btn btn-success">{{ _("Send Query") }}</button>
+
+{% if 'InvoicesDetails_tbl.LineId' in request._form['QUERY'] %}
+
+
+                                        <button type="button" class="btn btn-primary btn-block me-2">
+                                            <i class="fa-solid fa-edit me-2"></i>
+                                            Create Invoice Details
+                                        </button>
+                                    </a>
+                            {% endif %}
+                            </div>
+                        </div>
+ -->
+
+
+
+
+                    <div class="card-body border-bottom py-3">
+                        {% block create_form %}
+
+                        {%if update %}
+                        <h3 class="card-title" style="color: green;">{{update}}</h3>
+                        {% endif %}
+
+                        {%if update_error %}
+                        <h3 class="card-title" style="color: red;">{{update_error}}</h3>
+                        {% endif %}
+
+                        {%if update_error_list %}
+
+                        {% for er in update_error_list %}
+                        <h3 class="card-title" style="color: red;">{{er}}</h3>
+                        {% endfor %}
+                        {% endif %}
+                        {% if obj['SourceDBcopy'] == None %}
+                        {% set choicedb_dest = '' %}
+                        {% else %}
+                        {% set choicedb_dest = obj['choicedb_destination'] %}
+                        {% endif %}
+
+
+                        <div id="testerrr-value" data-value="{{ choicedb_dest }}"></div>
+                        <div class="row">
+
+                            {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+                            {% if field.identity5 =="choose1" %}
+                            <div class="col-4">
+                                <div class="mb-3">
+                                    {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                    error=errors.get(field.name, None) if errors else None %}
+                                    {% include field.label_template %}
+                                    {% include field.form_template %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if field.identity5 =="choose" %}
+                            <div class="col-4" id="choosedestdb">
+                                <!-- <div class="col-4" id="choicedbdestination1"> -->
+                                <div class="mb-3">
+                                    {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                    error=errors.get(field.name, None) if errors else None %}
+                                    {% include field.label_template %}
+                                    {% include field.form_template %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% endfor %}
+                        </div>
+                        <a href="{{ url_for(__name__ ~ ':choicedbdestination1', identity=model.identity) }}">
+                            <button type="submit" name="_choicedbdestination1" id="_choicedbdestination1"
+                                class="btn btn-success" style="display: none;">{{
+                                _("_choicedbdestination")
+                                }}</button></a>
+
+                        <!-- <button type="submit" name="_update_inventory" id="_update_inventory" class="btn btn-success">{{
+                            _("Update")
+                            }}</button> -->
+
+                        {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+                        {% if field.identity5 !="choose" %}
+                        {% if field.identity5 !="choose1" %}
+                        {% if field.identity5 !="query" %}
+
+
+                        {% if field.name =="queryname" %}
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="mb-3">
+                                    {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                    error=errors.get(field.name, None) if errors else None %}
+                                    {% include field.label_template %}
+                                    {% endwith %}
+
+                                </div>
+                            </div>
+
+
+                            <div class="col-4">
+                                <div class="mb-3">
+
+                                    {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                    error=errors.get(field.name, None) if errors else None %}
+                                    {% include field.form_template %}
+
+                                    {% endwith %}
+
+                                </div>
+                            </div>
+                            <div class="col-4">
+
+                                <div class="mb-3">
+
+
+                                    <p></p>
+                                    <p></p>
+
+                                    <button type="submit" name="_save_query" class="btn btn-success">{{ _("Save Query")
+                                        }}</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        {% elif field.name =="queryalias" %}
+
+                        <div class="row">
+
+
+                            <div class="col-4">
+                                <div class="mb-3">
+
+                                    {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                    error=errors.get(field.name, None) if errors else None %}
+                                    {% include field.label_template %}
+                                    {% endwith %}
+
+                                </div>
+                            </div>
+
+
+                            <div class="col-4" id="invoices_drop">
+                                <div class="mb-3">
+
+                                    {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                    error=errors.get(field.name, None) if errors else None %}
+                                    {% include field.form_template %}
+                                    {% endwith %}
+
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+
+                                <div class="mb-3">
+
+                                    <p></p>
+                                    <p></p>
+                                    <!--     <button type="submit" name="_load_query" id="_load_query" class="btn btn-primary btn-block me-2">{{ _("Load Query") }}</button> -->
+                                    <button type="submit" name="_load_query" id="_load_query"
+                                        class="btn btn-primary btn-block me-2" style="
+    display: none;">Load Query</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        {% else %}
+
+                        <div class="mb-3">
+
+                            {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                            error=errors.get(field.name, None) if errors else None %}
+
+                            {% include field.label_template %}
+                            {% include field.form_template %}
+
+                            {% endwith %}
+                        </div>
+
+                        {% endif %}
+                        {% endif %}
+                        {% endif %}
+
+
+                        {% endif %}
+
+                        {% endfor %}
+
+
+
+
+
+                        {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+                        {% if field.identity5 !="choose" %}
+
+                        {% if field.name =="QUERY" %}
+
+                        <div class="row">
+
+                            <div class="card-footer text-black">
+                                <!--                             <div class="btn-list ms-auto justify-content-end"> -->
+
+                                <div class="col-4">
+
+                                    <div class="mb-3">
+
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% include field.label_template %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+
+                                <div class="col-4">
+
+                                    <div class="mb-3">
+
+                                        <a href="{{ url_for(__name__ ~ ':list', identity=model.identity) }}"
+                                            class="btn btn-danger">{{ _("Cancel") }}</a>
+                                        <!--                                 <button type="submit" name="_add_another"
+                                        class="btn">{{ _("Save and add another") }}</button>
+                                <button type="submit" name="_continue_editing"
+                                        class="btn">{{ _("Save and continue editing") }}</button>
+ --> <button type="submit" class="btn btn-success">{{ _("Send Query") }}</button>
+                                        <!-- <button type="button" class="btn btn-primary btn-block me-2">
+                                            <i class="fa-solid fa-edit me-2"></i>
+                                            {{ _("Create Invoice") }}
+                                        </button>
+ -->
+                                        <!--     <a href="{{ url_for(__name__ ~ ':create_invoice', identity=model.identity)   | safe }}?name=delete"> -->
+                                        <!--  <a href="{{ url_for(__name__ ~ ':create_invoice', identity=model.identity) }}"> -->
+                                        <!--     <a href="">
+                                                    <button id="create_invoice" type="button" class="btn btn-primary btn-block me-2">
+                                                        <i class="fa-solid fa-edit me-2"></i>
+                                                        {{ _("Create Invoice") }}
+                                                    </button>
+                                                </a> -->
+                                        {% if 'lineid' in request._form['QUERY']|lower %}
+                                        {% if request._form['choicedb_source'] and request._form['choicedb_destination']
+                                        and (request._form['invoice'] or request._form['Account_Number'] or
+                                        request._form['Sales_Rep']) %}
+                                        <p></p>
+                                        <a
+                                            href="{{ url_for(__name__ ~ ':create_invoice', identity=model.identity) }}?choicedb_source=={{ request._form.choicedb_source }}?choicedb_destination=={{ request._form['choicedb_destination'] }}?activated_Invoices_tbl=={{ request._form['activated_Invoices_tbl'] }}?invoice=={{ request._form.invoice }}?Account_Number=={{ request._form.Account_Number }}?Sales_Rep=={{ request._form.Sales_Rep }}?QUERY=={{ obj['QUERY'] }}">
+                                            <button type="button" class="btn btn-primary btn-block me-2">
+                                                Create Invoice Details
+                                            </button>
+                                        </a>
+
+                                        {% endif %}
+
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+
+                                    {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                    error=errors.get(field.name, None) if errors else None %}
+                                    {% include field.form_template %}
+                                    {% endwith %}
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+
+                        {% endblock %}
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+{% block head_css %}
+{{ super() }}
+{% for link in model._additional_css_links(request, "CREATE" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+<style>
+    .is-invalid .select2-selection {
+        border-color: #d63939 !important;
+    }
+</style>
+{% endblock %}
+{% block script %}
+{{ super() }}
+{% for link in model._additional_js_links(request, "CREATE" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/form_manualupdate.js') }}"></script>
+
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='js/render_manualupdate_quotation.js') }}"></script>
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='js/render_manualupdate_list.js') }}"></script>
+
+
+
+{% endblock %}

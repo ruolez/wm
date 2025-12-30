@@ -1,0 +1,237 @@
+{% extends "layout.html" %}
+{% include "print.html" %}
+{% include "forms/_remove.html" %}
+
+{% block header %}
+
+
+
+
+
+    <div class="d-flex justify-content-between align-items-center">
+      <h2 id="labelH1">ITEMS</h2>
+
+    </div>
+
+{% endblock %}
+{% block content %}
+      <div class="col-12">
+
+        <div class="items-wrapper">
+
+
+        <div class="items-head">
+          <div class="dropdown mb-2 hidden" id="dbDropdown">
+            <button class="btn dropdown-toggle shadow drowpdownlayout dbDropdown" type="button" id="dropdownMenuButton"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Select DB...
+            </button>
+            <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton" id="dropdownMenu">
+              <!-- Dropdown items will be added dynamically here -->
+            </div>
+          </div>
+
+
+
+      </div>
+
+      <div class="items-content">
+        <div class="card card-sm">
+          <div class="card-body">
+        <table id="items-table" class="table table-vcenter text-nowrap table-hover cell-border table-bordered cell-border compact stripe mt-2">
+          <thead>
+            <th>Description</th>
+            <th>SKU</th>
+            <th>UPC</th>
+            <th>UnitPrice</th>
+            <th>UnitCost</th>
+            <th>DeliveryB</th>
+            <th>Discontinued</th>
+          </thead>
+        </table>
+
+      </div>  </div>
+      </div>
+      <div class="items-footer mt-2">
+        <div class="footer-content">
+            <div class="mr-1">
+                <label for="lookin" class="form-label"><strong>Look in:</strong></label>
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle lookinDropdown drowpdownlayout" type="button" id="lookinDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false" data-value="1" tabindex="-1" disabled>
+                        SKU
+                    </button>
+                    <ul class="dropdown-menu scrollable-menu" aria-labelledby="lookinDropdown" id="lookinDropdownmenu">
+                        <li><a class="dropdown-item" data-value="1">SKU</a></li>
+                        <li><a class="dropdown-item" data-value="2">UPC</a></li>
+                        <li><a class="dropdown-item" data-value="3">Description</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <label for="modalsearch" class="form-label"><strong>for value:</strong></label>
+                <input type="text" class="form-control col-10" id="modalsearch" name="modalsearch"
+                    placeholder="Search Items... " disabled tabindex="0">
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+
+
+
+
+</div>
+
+
+
+<div class="modal modal-blur fade" id="massUpdateModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" >
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Mass items update</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pb-0">
+            <div class="col-lg-12">
+                <label for="unitcost" class="form-label"><strong> UnitCost: </strong></label>
+                <input type="number" class="form-control" id="unitcost" name="unitcost" min="0.00"step="0.01" placeholder="0.00"><br>
+            </div>
+            <div class="col-lg-12">
+                <label for="unitprice" class="form-label"><strong> UnitPrice: </strong></label>
+                <input type="number" class="form-control" id="unitprice" name="unitprice" min="0.00"step="0.01" placeholder="0.00"><br>
+            </div>
+            <div class="col-lg-12">
+                <label for="deliveryb" class="form-label"><strong> Delivery B: </strong></label>
+                <input type="number" class="form-control" id="deliveryb" name="deliveryb" min="0.00"step="0.01" placeholder="0.00"><br>
+            </div>
+        <div class="modal-footer">
+          <button id="saveNewPrices" type="button" class="btn btn-primary" >Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}
+
+{% block head_css %}
+
+<style>
+
+#items-table td > input {
+     width: 20% !important;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-content > div {
+    display: flex;
+    align-items: center;
+}
+
+.mr-1 {
+    margin-right: 1rem;
+}
+
+.col-4 {
+    width: 33.33%; /* Adjust as needed */
+    display: flex;
+    align-items: center;
+}
+
+.form-label {
+    white-space: nowrap;
+}
+
+
+
+#items-table td {
+  padding: .75rem .75rem !important;
+}
+.dataTables_scrollHead tr{
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+  height: 29.25px !important;
+}
+
+
+  .items-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 84vh;
+}
+
+.items-content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
+.items-footer {
+    margin-top: auto;
+}
+
+
+
+
+</style>
+
+
+
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.min.css') }}" />
+ <link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/main.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/toastr.min.css') }}" />
+
+{% for link in model._additional_css_links(request, "LIST" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/moment.min.js') }}"></script>
+
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/vfs_fonts.js') }}"></script>
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.checkboxes.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/toastr.min.js') }}"></script>
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.searchHighlight.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/utils.js') }}"></script>
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/common/common.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/items/massupdate_service.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/items/massupdate.js') }}"></script>
+
+{% if custom_render_js(request) %}
+<script type="text/javascript" src="{{ custom_render_js(request) }}"></script>
+{% endif %}
+{% for link in model._additional_js_links(request, "LIST" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+
+
+<script>
+    var model = {{ __js_model__ | tojson | safe}};
+    var newUrl = {{ url_for(__name__ ~ ':SourceDB', identity = 'items_massupdate')| tojson | safe}};
+</script>
+
+
+
+
+
+{% endblock %}

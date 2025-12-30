@@ -1,0 +1,22 @@
+[
+    {
+        "TypeDB": "mssql",
+        "Username": "test",
+        "Password": "test_passw",
+        "ipAddress": "10.0.0.1",
+        "ShareName": "temp_ShareName",
+        "Port": 2209,
+        "NameDB": "DB1",
+        "Nick": "nick_DB1"
+    },
+    {
+        "TypeDB": "mssql",
+        "Username": "test1",
+        "Password": "test_passw1",
+        "ipAddress": "10.0.0.2",
+        "ShareName": "temp_ShareName1",
+        "Port": 2209,
+        "NameDB": "DB2",
+        "Nick": "nick_DB2"
+    }
+]

@@ -1,0 +1,496 @@
+html, body {
+  height: 100%; /* Убедитесь, что корневые элементы занимают всю высоту */
+  margin: 0;
+  padding: 0;
+  overflow: scroll; /* Исключаем лишние скроллы на уровне документа */
+}
+
+
+.form-label{
+     margin-bottom: 0rem !important;
+
+}
+
+.modal-dialog-full{
+  max-width: 96% !important;
+}
+
+
+.sorting {
+    color: red;
+    font-size: 16px;
+}
+#items-table td {
+    font-size: 12px !important;
+}
+#items-table td:has(> input) {
+
+    padding: 0;
+}
+#items-table td:not(:has(> input)) {
+    padding-left: 10px;
+}
+
+#items-table td > input {
+    width: 100%;
+}
+
+#brouse-items-table td > input:not([type="checkbox"]) {
+    width: 100%;
+}
+#brouse-items-table td:has(> input:not([type="checkbox"])) {
+    padding: 0;
+}
+
+ td{
+  font-size: 14px !important;
+}
+
+.details-table td{
+  font-size: 12px !important;
+}
+
+
+table:not(#details-table) td {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+.details-table.table thead th {
+  font-size:.725rem;
+ }
+
+
+ .dataTables_scrollHead th{
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+
+th{
+  text-align: center !important;
+}
+
+.form-control-table:focus {
+    color: inherit;
+    background-color: var(--tblr-bg-forms);
+    border-color: #90b5e2;
+    outline: 0;
+    /* box-shadow: inset 0 0 0 .15rem rgba(32, 107, 196, .25) !important; */
+     box-shadow: inset 0 0 0 .15rem red !important;
+    z-index: 100 !important;
+}
+
+.rotate-icon:hover svg {
+    animation: rotateIcon 1s linear infinite;
+}
+
+@keyframes rotateIcon {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+.mr-1{
+  margin-right: 5px !important;
+}
+
+.ml-5{
+  margin-left: 4rem !important;
+}
+
+tr {
+  cursor: default ;
+}
+
+
+
+.dropdown-menu.scrollable-menu {
+  max-height: 208px;
+  overflow-y: scroll;
+}
+
+
+.dropdown-menu.scrollable-menu:not(.show) {
+  display: none;
+}
+
+  div.dataTables_wrapper div.dataTables_info {
+    padding-top: 0;
+  }
+
+  table.dataTable span.highlight {
+    background-color: #ffff88;
+    border-radius: 0.28571429rem;
+  }
+
+  table.dataTable span.column_highlight {
+    background-color: #ffcc99;
+    border-radius: 0.28571429rem;
+  }
+
+  /* table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
+  table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+    background-color: #206bc4;
+  } */
+
+  table.dataTable {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+  }
+
+  .custom-row-flex {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .total-column {
+    font-weight: bold;
+  }
+
+  .lookinDropdown {
+    width: 116px;
+  }
+
+  .dbDropdown {
+    width: 168px !important;
+  }
+
+  .drowpdownlayout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .td-wrapper {
+    /* padding: 0 !important; */
+    text-align: center !important;
+  }
+
+  .form-control-table {
+    width: 5.753125rem;
+    border: none !important;
+    border-radius: 0 !important;
+    font-size: inherit !important;
+    padding: 0 0 0 .4375rem !important;
+    height: 2.25rem !important;
+    text-align: center !important;
+  }
+
+  .drop-second-page {
+    width: 9.5625rem !important;
+  }
+
+  .small-margin-buttom {
+    margin-bottom: 0.1875rem;
+  }
+
+  .unsetbackground {
+    color: unset !important;
+    background-color: inherit !important;
+  }
+
+  .unsetbackground:focus {
+    background-color: unset;
+  }
+
+  .advselect {
+    position: relative;
+    display: inline-block;
+  }
+
+  .selectopened {}
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  .arrow {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+  }
+
+  .arrow:after {
+    content: "";
+    display: inline-block;
+    vertical-align: 0.306em;
+    width: 0.36em;
+    height: 0.36em;
+    border-bottom: 1px var(--tblr-border-style);
+    border-left: 1px var(--tblr-border-style);
+    margin-right: 0.1em;
+    margin-left: 0.4em;
+    transform: rotate(-45deg);
+  }
+
+  .width100 {
+    width: 100% !important;
+  }
+
+  .display-none{
+    display: none;
+  }
+  .invalid-input {
+    border: 0.5px solid red;
+  }
+
+  .form-group {
+    margin-right: 15px;
+}
+
+.form-group input {
+    margin-right: 5px;
+}
+
+.form-check-inline {
+    margin-bottom: 0 !important;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.btn:hover {
+  /* border: red 1px solid; */
+
+}
+.btn:hover .icon-tabler-trash {
+  animation: shake-keyframes 1.8s ease-in-out infinite;
+}
+
+
+
+@keyframes shake-keyframes {
+  0% {
+        transform: scaleX(1)
+    }
+
+    10%,5% {
+        transform: scale3d(.9,.9,.9) rotate(-5deg)
+    }
+
+    15%,25%,35%,45% {
+        transform: scale3d(1.1,1.1,1.1) rotate(5deg)
+    }
+
+    20%,30%,40% {
+        transform: scale3d(1.1,1.1,1.1) rotate(-5deg)
+    }
+
+    50% {
+        transform: scaleX(1)
+    }
+}
+
+.btn:hover .icon-tabler-edit {
+  animation: shake-keyframes 1.8s ease-in-out infinite;
+}
+
+.ribbon-bottom-qu {
+ top:auto !important;
+ /* bottom: .15rem !important; */
+ font-size: 1rem;
+}
+
+.modal-blur-bg {
+  filter: blur(5px);
+  transition: filter 0.3s;
+}
+
+.rotate-90 {
+  transform: rotate(90deg);
+  transition: transform 0.2s ease-in-out;
+}
+.rotate-0 {
+  transform: rotate(0deg);
+  transition: transform 0.2s ease-in-out;
+}
+
+.no-spin::-webkit-outer-spin-button,
+.no-spin::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    padding: 0 !important;
+}
+
+
+.no-spin {
+    -moz-appearance: textfield;
+    padding: 0 !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.price-column {
+  position: relative;
+}
+
+.price-column::before {
+  content: '$';
+  left: 10px; /* Adjust as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* Ensures the dollar sign doesn't interfere with selection */
+}
+
+table thead .price-column::before {
+  content: none;}
+
+/* .parent:has(.selected) .focusable {
+  color: rgb(196, 200, 206) !important;
+} */
+
+/* .parent:has(.selected) .unitPrice {
+  color: rgb(196, 200, 206) !important;
+} */
+
+.parent:has(.selected) .focusable {
+  color: black !important;
+}
+
+.parent.selected .focusable {
+  color: black !important;
+}
+
+.parent.selected .btn:hover {
+  background-color: none; /* Или другой стиль для отмены фона */
+  color: none; /* Или другой стиль для отмены цвета */
+  pointer-events: none; /* Отключение событий наведения */
+}
+
+.popover-header{
+  text-align: center !important;
+}
+
+
+/* Disable clicks for the form (except for popover) and add overlay */
+#body.disable-clicks {
+  pointer-events: none;
+  position: relative;
+}
+
+/* Semi-transparent overlay over the form */
+.form-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  /* Semi-transparent black */
+  z-index: 1000;
+}
+
+/* Ensure popover is above the overlay */
+.popover {
+  z-index: 9999 !important;
+  pointer-events: auto;
+}
+
+#invoiceLabel {
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+.help-content {
+  color: white;
+}
+
+.help-content:hover {
+  color: rgb(181, 181, 181);
+
+}
+
+
+
+.black-text-color {
+  color: black; /* Чёрный цвет по умолчанию */
+}
+
+.selected .black-text-color {
+  color: white; /* Белый цвет, если родитель имеет класс selected */
+}
+
+table.dataTable > tbody > tr.selected input.columnTwo {
+
+  color: black;
+}
+
+table.dataTable > tbody > tr.selected > td:not(.columnTwo) {
+  box-shadow: inset 0 0 0 9999px rgb(13, 110, 253);
+  box-shadow: inset 0 0 0 9999px rgb(var(--dt-row-selected));
+  color: rgb(255, 255, 255);
+  color: rgb(var(--dt-row-selected-text));
+}
+
+#details-table tbody .custom-color {
+  background-color: antiquewhite !important;
+}
+
+
+.odd.selected td.hilight {
+  --dt-row-selected: none;
+  --dt-row-selected-text: 0,0,0;
+}
+.even.selected td.hilight {
+  --dt-row-selected: none;
+  --dt-row-selected-text: 0,0,0;
+}
+
+.spinner-container{
+  padding-top: 9.375rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+
+#details-table_wrapper .dataTables_scrollHead {
+  position: sticky;
+  top: 0; /* Закрепляем заголовок у верхней границы контейнера */
+  z-index: 150; /* Убедитесь, что заголовок выше остальных элементов */
+  background-color: white; /* Фон, чтобы перекрывать содержимое */
+}
+
+#details-table_wrapper .dataTables_scrollBody {
+  overflow-y: auto; /* Добавляем прокрутку для тела таблицы */
+  max-height: 49rem; /* Высота прокручиваемой области */
+}
+
+#items-table_wrapper .dataTables_scrollHead {
+  position: sticky;
+  top: 0; /* Закрепляем заголовок у верхней границы контейнера */
+  z-index: 150; /* Убедитесь, что заголовок выше остальных элементов */
+  background-color: white; /* Фон, чтобы перекрывать содержимое */
+}
+
+#items-table_wrapper .dataTables_scrollBody {
+  overflow-y: auto; /* Добавляем прокрутку для тела таблицы */
+  max-height: 22.5rem;/* Высота прокручиваемой области */
+}
+
+
+#browse-items-table_wrapper .dataTables_scrollHead {
+  position: sticky;
+  top: 0; /* Закрепляем заголовок у верхней границы контейнера */
+  z-index: 150; /* Убедитесь, что заголовок выше остальных элементов */
+  background-color: white; /* Фон, чтобы перекрывать содержимое */
+}
+
+#browse-items-table_wrapper .dataTables_scrollBody {
+  overflow-y: auto; /* Добавляем прокрутку для тела таблицы */
+  max-height: 69vh;/* Высота прокручиваемой области */
+}

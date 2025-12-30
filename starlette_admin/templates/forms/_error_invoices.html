@@ -1,0 +1,47 @@
+﻿{% if error %}
+
+
+                    <div class="card-body">
+                        {% block details_table %}
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-vcenter table-mobile-md">
+                                    <thead>
+                                    <tr>
+                  {% set ns = namespace(beds=0) %}
+                                        {% for field in error['QUERY'][0] %}
+                                        <th>{{ _("Value") }}</th> -->
+                                        <th>{{ field }}</th>
+                                    {% endfor %}
+                                    </tr>
+
+                                        {% for int in error['QUERY'][:1000] %}
+                                    <tr>
+                    {% set ns.beds = ns.beds + 1 %}
+                                        {% for field in int %}
+                                        <th>{{ _("Value") }}</th> -->
+                                        <th>{{ int[field] }}</th>
+                                    {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                    </thead>
+                            <p><b><i>Total: {{ error['total']['Total'] }}</i></b></p>
+
+                                        <p>{% for field in error['total'] %}
+                                        {% if field != 'Total' %}
+                                         {{field}}: {{ error['total'][field] }} </p>
+
+    {% endif %}
+
+
+                                    {% endfor %}
+
+
+                                </table>
+                            </div>
+                        {% endblock %}
+                    </div>
+
+
+
+
+{% endif %}

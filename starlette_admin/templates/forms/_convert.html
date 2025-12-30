@@ -1,0 +1,236 @@
+<div class="modal fade" id="convertModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-status bg-orange"></div>
+        <div class="modal-body text-center py-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-orange icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M12 9v2m0 4v.01" />
+            <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
+          </svg>
+          <h3>Are you sure?</h3>
+          <div class="text-secondary mb2">Do you really want to convert Quotation to Invoice? </div>
+          <div class="hr-text">Please Fill Details:</div>
+          <div class="mt-4 w-100">
+
+            <div class="d-flex">
+              <div class="col-lg-10" style="
+              display: flex;
+              align-items: flex-start;
+              align-content: flex-start;
+              flex-direction: column;
+          ">
+                <label for="shipViaDropDown" class="form-label"><strong> Ship Via:</strong></label>
+                <div class="dropdown" id='shipViaDropDown-modal'>
+                  <button class="btn dropdown-toggle drowpdownlayout dbDropdown drop-second-page" type="button"
+                  id="shipvDropdown-modal" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%;">
+                  Ship Via
+                </button>
+                  <ul class="dropdown-menu scrollable-menu" aria-labelledby="shipviaDropdown-modal" id="shipviadropdown-menu-modal">
+
+                  </ul>
+                </div>
+                <br>
+            </div>
+
+            </div>
+
+
+
+            <div class="d-flex">
+              <div class="col-lg-10" style="
+              display: flex;
+              align-items: flex-start;
+              align-content: flex-start;
+              flex-direction: column;
+          ">
+                <label for="trackingNumber" class="form-label"><strong> TrackingNo:</strong></label>
+                <input type="text" class="form-control" id="trackingNumber" name="trackingNumber" autocomplete="off" placeholder="Tracking number"> <br>
+            </div>
+
+            </div>
+
+            <div class="d-flex">
+              <div class="col-lg-10" style="
+              display: flex;
+              align-items: flex-start;
+              align-content: flex-start;
+              flex-direction: column;
+          ">
+                <label for="shipingCost" class="form-label"><strong> Cost:</strong></label>
+                <input type="number" class="form-control floatNumberField" id="shipingCost" name="shipingCost" min="0.00"step="0.01" placeholder="0.00">
+
+            </div>
+            </div>
+
+            <div class="d-flex">
+              <div class="col-lg-10" style="
+              display: flex;
+              align-items: flex-start;
+              align-content: flex-start;
+              flex-direction: column;
+          ">
+                <label for="invoiceNotes" class="form-label"><strong> Notes:</strong></label>
+                <textarea id="invoiceNotes" class="form-control" name="invoiceNotes" placeholder="There are no note" rows="4" cols="65" style="resize:none" tabindex="-1" autocomplete="off"></textarea>
+            </div>
+            </div>
+            <div class="d-flex mt-3">
+              <div class="col-lg-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="scInvoiceCheckbox" name="scInvoiceCheckbox">
+                  <label class="form-check-label" for="scInvoiceCheckbox">
+                    <strong>SC</strong>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="w-100">
+            <div class="row">
+              <div class="col"><a href="#" class="btn w-100" data-bs-dismiss="modal">
+                  Cancel
+                </a></div>
+              <div class="col" id="convert"><a href="#" class="btn btn-warning w-100" id="yesConvertButton" data-bs-dismiss="modal">
+                  Convert
+              </a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.12.2.min.js"
+  integrity="sha256-lZFHibXzMHo3GGeehn1hudTAP3Sc0uKXBXAzHX1sjtk=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+  <script>
+
+
+$(document).ready(function () {
+    $(".floatNumberField").on("change", function () {
+        let value = parseFloat($(this).val()).toFixed(2);
+        if (!isNaN(value)) {
+            $(this).val(value);
+        } else {
+            $(this).val("0.00"); // В случае некорректного ввода
+        }
+    });
+});
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter' && document.getElementById('convertModal').classList.contains('show')) {
+        document.getElementById('yesConvertButton').click();
+      }
+    });
+
+    // })
+
+    function CheckForUPS(shipviaid){
+      $('#shipvDropdown-modal').attr('disabled',false);
+      $('#invoiceNotes').val('');
+      $('#trackingNumber').val('');
+      $('#shipingCost').val('');
+
+
+      if (shipviaid==1){
+        $('#trackingNumber').attr('disabled',true);
+        $('#trackingNumber').val('');
+        $('#shipingCost').attr('disabled',true);
+        $('#shipingCost').val('');
+        // $('#invoiceNotes').attr('disabled',true);
+        // $('#invoiceNotes').val('');
+      }
+      else{
+        $('#trackingNumber').attr('disabled',false);
+        $('#shipingCost').attr('disabled',false);
+        $('#invoiceNotes').attr('disabled',false);
+
+
+      }
+      }
+
+
+
+
+    function renderShippersDropdown(data) {
+  const dropdownMenu = $('#shipviadropdown-menu-modal');
+  dropdownMenu.empty(); // Clear the list before adding new elements
+
+  Object.entries(data).forEach(([fieldId, fieldValue]) => {
+    const listItem = $("<li>");
+    const anchor = $("<a>", {
+      class: "dropdown-item",
+      "data-value": fieldValue.shipperID,
+      text: fieldValue.shipperName,
+    });
+    listItem.append(anchor);
+    dropdownMenu.append(listItem);
+  });
+
+  // Add click event handler to dropdown items
+  dropdownMenu.on('click', '.dropdown-item', function(e) {
+     CheckForUPS($(this).data('value')||0);
+  });
+}
+
+function CreateDropdowns(dropdownId, items) {
+
+if (Array.isArray(items)) {
+  // Clear existing dropdown items
+  $(`#${dropdownId} ul.dropdown-menu`).empty();
+
+  // Add items
+  items.forEach((item) => {
+    const listItem = $("<li>");
+    const anchor = $("<a>", {
+      class: "dropdown-item",
+      "data-value": item.id,
+      text: item.name,
+    });
+    listItem.append(anchor);
+    $(`#${dropdownId} ul.dropdown-menu`).append(listItem);
+  });
+
+}
+
+}
+
+function validateShippingFormat(data) {
+  // Проверяем, что data - это массив
+  if (!Array.isArray(data) || data.length === 0) {
+    return false;
+  }
+
+  // Проверяем первый элемент массива
+  const firstItem = data[0];
+  const firstKey = Object.keys(firstItem)[0];
+  const firstValue = firstItem[firstKey];
+
+  // Если первый ключ - строка (имя), возвращаем false
+  if (typeof firstKey === 'string' && isNaN(parseInt(firstKey))) {
+    return false;
+  }
+
+  // Проверяем все элементы массива
+  return data.every(item => {
+    const keys = Object.keys(item);
+    if (keys.length !== 1) return false;
+
+    const key = keys[0];
+    const value = item[key];
+
+    return (
+      typeof parseInt(key) === 'number' &&
+      !isNaN(parseInt(key)) &&
+      typeof value === 'string'
+    );
+  });
+}
+
+
+    </script>

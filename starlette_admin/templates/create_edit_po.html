@@ -1,0 +1,452 @@
+{% extends "layout.html" %}
+{% include "print.html" %}
+{% include "forms/_remove.html" %}
+{% include "forms/_commit.html" %}
+{% block header %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center">
+    <h2 id="labelH1">NEW PURCHASE ORDER</h2>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <form id="POForm">
+        <div>
+          <div class="dropdown mb-2 hidden" id="dbDropdown">
+            <button class="btn dropdown-toggle shadow drowpdownlayout dbDropdown" type="button" id="dropdownMenuButton"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Select DB...
+            </button>
+            <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton" id="dropdownMenu">
+              <!-- Dropdown items will be added dynamically here -->
+            </div>
+          </div>
+
+          <div class="card shadow disabled" style="height: 51.625rem" id="mainpo" tabindex="-1">
+            <div class="card-header" tabindex="-1">
+              <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" tabindex="-1">
+                <li class="nav-item" tabindex="-1">
+                  <a href="#tabs-home-ex2" class="nav-link active" data-bs-toggle="tab" id="generaltab">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="icon icon-tabler icons-tabler-outline icon-tabler-notes">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M5 3m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" />
+                    <path d="M9 7l6 0" />
+                    <path d="M9 11l6 0" />
+                    <path d="M9 15l4 0" />
+                </svg>
+                    General</a>
+                </li>
+
+
+
+                <li class="nav-item ms-auto">
+                  <button type="button" class="nav-link" id="CloseButton" onclick="ClosePO()" title="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="m-0 icon icon-tabler icons-tabler-outline icon-tabler-x">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                      <path d="M18 6l-12 12" />
+                      <path d="M6 6l12 12" />
+                    </svg>
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            <div class="card-body">
+
+              <div class="row row-deck row-cards custom-row-flex mb-3">
+                <div class="col-md-6 col-lg-4">
+                  <div class="card card-no-border-top shadow">
+                    <div class="hr-text">
+                      <h4><span>Order</span></h4>
+                    </div>
+                    <div class="card-body" style="height: 10rem">
+
+                      <label for="ponumber" class="form-label required"><strong> Number: </strong></label>
+                      <input type="text" class="form-control" id="ponumber" name="ponumber" min="0" placeholder="Purchase Order Number"
+                       ><br>
+
+
+                      <label for="podate" class="form-label"> <strong> Date: </strong> </label>
+                      <input type="date" class="form-control" id="podate" name="podate">
+
+                    </div>
+                    <div class="ribbon ribbon-bottom ribbon-start  bg-cyan-lt display-none ribbon-bottom-qu" id="POstatus" >
+
+                  </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-lg-8">
+                  <div class="card card-no-border-top shadow">
+                    <div class="hr-text">
+                      <h4><span>Supplier</span></h4>
+                    </div>
+                    <div class="card-body">
+
+                      <div class="row row-cards col-10">
+                        <div class="d-flex justify-content-start">
+                          <div class="col-5">
+                            <label for="bname" class="form-label required"> <strong> Business Name: </strong> </label>
+                            <div class="drowpdownlayout advselect">
+                              <div class="input-wrapper">
+                                <input id="bnameInput" type="text" name="bnameInput" placeholder="Type to search..."
+                                  class="form-control">
+                                <span class="arrow"></span>
+                              </div>
+                            </div>
+                            <br>
+                          </div>
+                          <div class="col-5">
+
+                            <label for="acnum" class="form-label required"> <strong> Account Number: </strong> </label>
+                            <div class="drowpdownlayout advselect">
+                              <div class="input-wrapper">
+                                <input id="acnumInput" type="text" name="myCountry" placeholder="Type to search..."
+                                  class="form-control">
+                                <span class="arrow"></span>
+                              </div>
+                            </div>
+
+                            <br>
+                          </div>
+
+                        </div>
+                        <br>
+                        <div class="d-flex justify-content-start">
+                            <div class="col-5">
+                                <label for="contactname" class="form-label"> <strong> Contact Name: </strong> </label>
+                                <div class="drowpdownlayout advselect">
+                                  <div class="input-wrapper">
+                                    <input id="contactname" type="text" name="contactname"
+                                      class="form-control">
+
+                                  </div>
+                                </div>
+                                <br>
+                              </div>
+                              <div class="col-5">
+                                <label for="bphone" class="form-label"> <strong> Phone: </strong> </label>
+                                <div class="drowpdownlayout advselect">
+                                  <div class="input-wrapper">
+                                    <input id="bphone" type="text" name="bphone"
+                                      class="form-control">
+
+                                  </div>
+                                </div>
+                                <br>
+                              </div>
+                        </div>
+                      </div>
+                      <br>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="tab-content m-0" >
+                <div class="tab-pane active show" id="tabs-home-ex2">
+                  <div class="card shadow" id="tablezone">
+                    <div style="height: 25.375rem;overflow-x: hidden; overflow-y: scroll;  margin-bottom: 7px;">
+                      <table id="items-table"
+                        class="table table-vcenter text-nowrap table-hover cell-border table-bordered cell-border compact stripe">
+                        <thead>
+                          <tr>
+                            <th>Qty</th>
+                            <th>Description</th>
+                            <th>Unit Cost</th>
+                            <th>Unit Price</th>
+                            <th>SKU</th>
+                            <th>UPC</th>
+                            <th>Stock</th>
+                            <th>Total</th>
+                            <th>Comment</th>
+                            <th>TotalCost</th>
+                            <th> </th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                    <div>
+
+
+
+                      <div class="d-flex justify-content-center col-12">
+                        <div class="row row-cards" id="searchPanel">
+                            <div class="col-md-6 col-lg-12 d-flex align-items-center">
+                                <div class="d-flex form-group">
+                                    <input type="button" id="quickSearchButton" class="btn" value="[F2] UPC" data-id="2" tabindex="-1">
+                                    <input type="text" class="form-control" name="quicksearch" id="quicksearch">
+                                    <button type="button" id="browseItemsButton" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal">
+                                        [F3] Browse Items
+                                    </button>
+                                </div>
+                                <label class="form-check form-check-inline align-items-center">
+                                    <input class="form-check-input" type="checkbox" checked id="groupitems">
+                                    <span class="form-check-label">Group Items</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+
+                      <div>
+
+
+                        <div class="col-12 p-2 mb-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <textarea id ="notes" class="form-control" name="example-textarea" placeholder="Notes" rows="2" cols="50" style="resize:none"></textarea>
+                                </div>
+                                <div>
+                                    <div class="me-3" id="totalitems">
+                                        Total items: <strong>0</strong>
+                                      </div>
+                                      <div class="me-3" id="totalqty">
+                                        Total Quantity: <strong>0</strong>
+                                      </div>
+
+                                      <div class="me-3" id="totalcost">
+                                        Total Cost: $<strong>0</strong>
+                                      </div>
+                                </div>
+                            </div>
+                          <div>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+
+          </div>
+
+
+
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-list mt-3" id="removeButtonWrapper">
+              <button type="button" class="btn btn-outline-danger" id="removeButton" onclick="DeleteModal()" disabled>Delete</button>
+            </div>
+            <div class="btn-list mt-3" id="actionButtonsWrapper">
+              <button type="button" class="btn btn-outline-warning" id="ConvertButton" onclick="Commit()" disabled> Commit</button>
+              <button type="button" class="btn btn-outline-primary" id="submitAndSaveButton" onclick="SaveAndClosePO()" disabled> Save and Close </button>
+              <button type="button" class="btn btn-outline-primary" id="submitButton" onclick="SavePO()" disabled>Save</button>
+              <button type="button" class="btn btn-outline-success" id="printButton" onclick="SaveAndPrintPO()" disabled>Save and Print</button>
+
+            </div>
+          </div>
+
+      </form>
+
+    </div>
+  </div>
+
+
+
+</div>
+
+
+<div class="modal modal-blur fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" >
+  <div class="modal-dialog modal-dialog-centered modal-dialog-full" role="document">
+    <div class="modal-content" style=" height: 97%;">
+      <div class="modal-header">
+        <h5 class="modal-title">Browse items</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div style="height: 71vh; overflow-y: scroll;">
+          <table id="browse-items-table" class="table table-vcenter text-nowrap table-hover cell-border table-bordered">
+            <thead>
+              <th class="selected-column">S</th>
+              <th class="qty-column td-wrapper">Qty</th>
+              <th class="description-column">Description</th>
+              <th class="unit-price-column" >Unit Price</th>
+              <th class="unit-cost-column">Unit Cost</th>
+              <th class="sku-column">SKU</th>
+              <th class="upc-column" >UPC</th>
+              <th class="stock-column">Stock</th>
+              <th class="total-column ">Total</th>
+              <th class="total-cost-column " >Total Cost</th>
+              <th class="comment-column " >Comment</th>
+            </thead>
+          </table>
+        </div>
+        <br>
+
+
+
+
+      </div>
+      <div class="modal-footer d-flex justify-content-between">
+
+        <div class="col-8 d-flex align-items-start justify-content-sm-start">
+          <div class="col-3 d-flex align-items-center justify-content-between">
+            <label for="lookin" class="form-label m-0 mx-lg-2"> <strong> Look in: </strong> </label>
+            <div class="dropdown">
+              <button class="btn dropdown-toggle lookinDropdown drowpdownlayout" type="button" id="lookinDropdown"
+                data-bs-toggle="dropdown" aria-expanded="false" data-value="1" tabindex="-1" >
+                SKU
+              </button>
+              <ul class="dropdown-menu scrollable-menu" aria-labelledby="lookinDropdown" id="lookinDropdownmenu">
+                <li><a class="dropdown-item" data-value="1">SKU</a></li>
+                <li><a class="dropdown-item" data-value="2">UPC</a></li>
+                <li><a class="dropdown-item" data-value="3">Decription</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-9 d-flex align-items-center justify-content-between">
+            <label for="modalsearch" class="form-label m-0 mx-lg-2 col-1-1"> <strong> for value: </strong> </label>
+            <input type="text" class="form-control col-10" id="modalsearch" name="modalsearch" placeholder="Search…">
+          </div>
+        </div>
+        <div class="col-2 d-flex align-items-start justify-content-sm-start">
+          <button class="btn btn-primary" id="addItemButtonPO" tabindex="-1">Add Items</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="hidden" name="POID" id="POID">
+<input type="hidden" name="status" id="status">
+
+
+{% endblock %}
+
+
+<!-- css block -->
+{% block head_css %}
+{{ super() }}
+
+
+{% for link in model._additional_css_links(request, "CREATE" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+
+
+<style>
+  .is-invalid .select2-selection {
+    border-color: #d63939 !important;
+  }
+
+  .custom-card-header {
+    padding-top: 5%;
+    padding-bottom: 5%;
+  }
+</style>
+
+
+
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/toastr.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/main.css') }}" />
+
+
+
+{% for link in model._additional_css_links(request, "LIST" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+
+
+
+{% endblock %}
+
+
+{% block script %}
+{{ super() }}
+{% for link in model._additional_js_links(request, "CREATE" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<script>
+    var model = {{ __js_model__ | tojson | safe}};
+    var SourceDBUrl = {{ url_for(__name__ ~ ':SourceDB', identity = 'purchaseorder')| tojson | safe}};
+    var newUrl = {{ url_for(__name__ ~ ':list', identity = 'createpurchaseorder')| tojson | safe}};
+
+  var db_list = $.ajax({
+    url: newUrl,
+    type: "get",
+    traditional: true,
+    dataType: "json",
+    success: function (data, status, xhr) {
+      db_list = data.items;
+    },
+  });
+//   document.addEventListener("DOMContentLoaded", function () {
+//     inDataTable();
+//   });
+
+
+</script>
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/form.js') }}"></script>
+
+<script src="https://code.jquery.com/jquery-1.12.2.min.js"
+  integrity="sha256-lZFHibXzMHo3GGeehn1hudTAP3Sc0uKXBXAzHX1sjtk=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/moment.min.js') }}"></script>
+{% if get_locale() != 'en' %}
+<script type="text/javascript"
+  src="{{ url_for(__name__ ~ ':statics', path='i18n/momentjs/' ~ get_locale() ~ '.js') }}"></script>
+{% endif %}
+{% if 'pdf' in model.export_types %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/pdfmake.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/vfs_fonts.js') }}"></script>
+{% endif %}
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/jquery.mask.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.checkboxes.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/CellEdit.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/toastr.min.js') }}"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+
+
+<script type="text/javascript"
+  src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.searchHighlight.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/utils.js') }}"></script>
+<script>var model = {{ __js_model__ | tojson | safe}};</script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/common/common.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/common/common_service.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/purchase_order/purchase_order.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/purchase_order/purchase_orders_list.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/purchase_order/purchase_order_service.js') }}"></script>
+
+<!-- <script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/render_new_quotation.js') }}"></script> -->
+<!-- <script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/quotation_service.js') }}"></script> -->
+
+{% if custom_render_js(request) %}
+<script type="text/javascript" src="{{ custom_render_js(request) }}"></script>
+{% endif %}
+{% for link in model._additional_js_links(request, "LIST" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<!-- <script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/render_new_list.js') }}"></script> -->
+
+
+{% endblock %}

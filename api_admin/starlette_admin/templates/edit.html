@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block header %}
+
+<div class="d-flex justify-content-between align-items-center">
+    <h1>{{ model.label }}</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':index') }}">{{ _("Admin") }}</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':list', identity=model.identity) }}">{{ model.label }}</a>
+        </li>
+        <li class="breadcrumb-item active">{{ _("Edit") }}</li>
+    </ol>
+</div>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <form action="{{ request.url | safe }}" method="POST" enctype="multipart/form-data">
+                    <div class="card-header">
+                        <div class="container-fluid">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h3 class="card-title">{{ _("Edit %(name)s", name=model.name ) }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body border-bottom py-3">
+                        {% block edit_form %}
+                        {% set list_shed_1 = ["dop1", "interval_1", "time_1", "activated_shed"] %}
+                        {% set list_shed_2 = ["interval_2", "time_2", "activated_shed_1"] %}
+                        {% set list_shed_3 = ["dop2","interval_3", "time_3", "activated_dop"] %}
+                        {% for field in model.get_fields_list(request, 'EDIT' | ra) %}
+                        {%if field.name in list_shed_1%}
+                        <div class="mb-3" style="background: #aff4b5;">
+                            {% elif field.name in list_shed_2%}
+                            <div class="mb-3" style="background: #8ed8ef;">
+                                {% elif field.name in list_shed_3%}
+                                <div class="mb-3" style="background: #e8df7d;">
+
+                                    {% else %}
+                                    <div class="mb-3">
+                                        {% endif %}
+
+                                        {% with action=('EDIT' | ra),data=obj[field.name], error=errors.get(field.name,
+                                        None) if
+                                        errors else None %}
+                                        {% include field.label_template %}
+                                        {% include field.form_template %}
+                                        {% endwith %}
+                                    </div>
+                                    {% endfor %}
+                                    {% endblock %}
+                                </div>
+                                <div class="card-footer text-black">
+                                    <div class="btn-list ms-auto justify-content-end">
+                                        <a href="{{ url_for(__name__ ~ ':list', identity=model.identity) }}"
+                                            class="btn btn-danger">{{ _("Cancel") }}</a>
+                                        <button type="submit" name="_add_another" class="btn">{{ _("Save and add
+                                            another")
+                                            }}</button>
+                                        <button type="submit" name="_continue_editing" class="btn">{{ _("Save and
+                                            continue
+                                            editing")
+                                            }}</button>
+                                        <button type="submit" class="btn btn-success">{{ _("Save") }}</button>
+                                    </div>
+                                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block head_css %}
+{{ super() }}
+{% for link in model._additional_css_links(request, "EDIT" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+<style>
+    .is-invalid .select2-selection {
+        border-color: #d63939 !important;
+    }
+</style>
+{% endblock %}
+{% block script %}
+{{ super() }}
+{% for link in model._additional_js_links(request, "EDIT" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/form.js') }}"></script>
+{% endblock %}

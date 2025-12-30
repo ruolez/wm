@@ -1,0 +1,448 @@
+﻿{% extends "layout.html" %}
+{% block header %}
+<div class="d-flex justify-content-between align-items-center">
+    <h1>{{ model.label }}</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':index') }}">{{ _("Admin") }}</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':list', identity=model.identity) }}">{{ model.label }}</a>
+        </li>
+        <li class="breadcrumb-item active">{{ _("Create") }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <form action="{{ request.url | safe }}" method="POST" enctype="multipart/form-data">
+                    <div class="card-header">
+                        <div class="container-fluid">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+
+                                <h3 class="card-title">Edit Quotation {{obj["QuotationNumber"]}}</h3>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="card-body border-bottom py-3">
+                        {% block create_form %}
+
+                        {%if update %}
+                        <h3 class="card-title" style="color: green;">{{update}}</h3>
+                        {% endif %}
+
+                        {%if update_error %}
+                        <h3 class="card-title" style="color: red;">{{update_error}}</h3>
+                        {% endif %}
+
+                        {%if update_error_list %}
+                        {% for er in update_error_list %}
+                        <h3 class="card-title" style="color: red;">{{er}}</h3>
+                        {% endfor %}
+                        {% endif %}
+
+                        <div class="row">
+                            {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+
+                            {% if field.identity2 == "SourceDB" %}
+
+                            <div class="row" id="checkdb_quotation_edit">
+                                <div class="col-4">
+                                    <div class="mb-3">
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% include field.label_template %}
+                                        {% endwith %}
+                                    </div>
+                                    <div class="mb-3">
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% include field.form_template %}
+                                        {% endwith %}
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if obj['SourceDB'] == None %}
+                            {% set choicedb_source_client = '' %}
+                            {% else %}
+                            {% set choicedb_source_client = obj['SourceDB'] %}
+                            {% endif %}
+
+
+
+                            <div id="testerrr-value" data-value="{{ choicedb_source_client }}"></div>
+
+
+                            <div class="row">
+
+                                {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+                                {% if field.identity2 == "businessnamequotation" %}
+
+                                <div class="col-4" id="checkbusinessnamequotation_quotation_edit">
+                                    <div class="mb-3">
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% include field.label_template %}
+                                        {% include field.form_template %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+
+
+                                {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+                                {% if field.identity2 == "accountnoquotation" %}
+
+                                <div class="col-4" id="checkaccountnoquotation_quotation_edit">
+                                    <div class="mb-3">
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% include field.label_template %}
+                                        {% include field.form_template %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+
+                            </div>
+
+
+
+                            <button type="submit" name="_checkbusinessnamequotation_quotation_edit"
+                                id="_checkbusinessnamequotation_quotation_edit" class="btn btn-success" style="
+    display: none;">{{ _("CheckBusiness") }}</button>
+
+                            <button type="submit" name="_checkaccountnoquotation_quotation_edit"
+                                id="_checkaccountnoquotation_quotation_edit" class="btn btn-success" style="
+    display: none;">{{ _("Checkaccountnoquotation") }}</button>
+
+
+
+
+                            <div class="row">
+                                {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+                                {% if field.identity2 == "productdescriptionquotation" %}
+
+                                <div class="col-3" id="productskudescription_quotation_edit">
+                                    <div class="mb-3">
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% include field.label_template %}
+                                        {% include field.form_template %}
+                                        {% endwith %}
+                                    </div>
+
+                                </div>
+
+                                {% endif %}
+                                {% endfor %}
+
+                                {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+                                {% if field.identity2 == "productskuquotation" %}
+
+                                <div class="col-3" id="productsku_quotation_edit">
+                                    <div class="mb-3">
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% include field.label_template %}
+                                        {% include field.form_template %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+
+                                {% endif %}
+                                {% endfor %}
+
+                                {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+                                {% if field.identity2 == "qtyquotation"%}
+
+                                <div class="col-2" id="qty_quotation_edit">
+                                    <div class="mb-3">
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% include field.label_template %}
+                                        {% include field.form_template %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+
+                                {% endif %}
+                                {% endfor %}
+
+
+
+                                {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+                                {% if field.identity2 == "pricequotation"%}
+
+                                <div class="col-2" id="qty_quotation_edit">
+                                    <div class="mb-3">
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% include field.label_template %}
+                                        {% include field.form_template %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+
+                                <div class="col-2">
+                                    <div class="mb-3" id="qty_quotation_edit">
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% if obj['qty_db'] or obj['qty_db'] == 0 %}
+
+                                        {% if obj['qty_db'] > 0 %}
+                                        <br>
+                                        <h4>Inventory</h4>
+                                        <br>
+
+                                        <h6 class="card-title" style="color: green;">{{obj['qty_db']}}</h6>
+                                        {% else %}
+                                        <br>
+                                        <h4>Inventory</h4>
+                                        <br>
+
+                                        <h6 class="card-title" style="color: red;">{{obj['qty_db']}}</h6>
+
+                                        {% endif %}
+                                        {% endif %}
+
+                                        {% endwith %}
+
+                                    </div>
+
+
+
+                                </div>
+
+                                <div class="col-1">
+
+                                    <div class="mb-3">
+                                        {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                        error=errors.get(field.name, None) if errors else None %}
+                                        {% if obj['qty_admin'] or obj['qty_admin'] == 0 %}
+
+                                        {% if obj['qty_admin'] > 0 %}
+                                        <br>
+                                        <h4>Reserved</h4>
+                                        <br>
+
+                                        <h6 class="card-title" style="color: green;">{{obj['qty_admin']}}</h6>
+                                        {% else %}
+                                        <br>
+                                        <h4>Reserved</h4>
+                                        <br>
+
+                                        <h6 class="card-title" style="color: red;">{{obj['qty_admin']}}</h6>
+
+                                        {% endif %}
+                                        {% endif %}
+
+                                        {% endwith %}
+
+                                    </div>
+
+
+                                </div>
+
+
+
+
+                                {% endif %}
+                                {% endfor %}
+
+
+                            </div>
+
+                            <a
+                                href="{{ url_for(__name__ ~ ':productdescriptionquotation', identity=model.identity) }}?SourceDB=={{ obj['SourceDB'] }}">
+                                <button type="submit" name="_productskudescription_quotation_edit"
+                                    id="_productskudescription_quotation_edit" class="btn btn-success"
+                                    style="display: none;">{{ _("_productskudescription_quotation") }}</button></a>
+
+                            <a
+                                href="{{ url_for(__name__ ~ ':productdescriptionquotation', identity=model.identity) }}?SourceDB=={{ obj['SourceDB'] }}">
+                                <button type="submit" name="_productsku_quotation_edit" id="_productsku_quotation_edit"
+                                    class="btn btn-success" style="display: none;">{{ _("_productsku_quotation")
+                                    }}</button></a>
+
+
+
+
+                            <button name="_qty_quotation_edit" id="_qty_quotation_edit" style="display: none;"
+                                onclick="myFunction()">Try it</button>
+
+
+                            <div class="card-footer text-black">
+                                <div class="btn-list ms-auto justify-content-end">
+                                    <button type="submit" name="_checkdb_quotation_edit" id="_checkdb_quotation_edit"
+                                        class="btn btn-success">{{ _("Update Quotation") }}</button>
+
+
+                                    {% if 'lineid' in request._form['QUERY']|lower %}
+
+                                    <a
+                                        href="{{ url_for(__name__ ~ ':create_invoice', identity=model.identity) }}?SourceDB=={{ request._form.SourceDB }}?choicedb_destination=={{ request._form['choicedb_destination'] }}?invoice=={{ request._form.invoice }}?QUERY=={{ obj['QUERY'] }}">
+                                        <button type="button" class="btn btn-primary btn-block me-2">
+                                            Create Invoice Details
+                                        </button>
+                                    </a>
+                                    {% endif %}
+
+
+
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+                        {% endblock %}
+                    </div>
+
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+
+
+                <table id="dt" class="table table-vcenter text-nowrap" style="font-size: 12px;">
+                    <thead>
+                        <tr id="table-header">
+
+                        </tr>
+
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+{% block head_css %}
+{{ super() }}
+{% for link in model._additional_css_links(request, "CREATE" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+<style>
+    .is-invalid .select2-selection {
+        border-color: #d63939 !important;
+    }
+</style>
+
+
+
+
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.checkboxes.css') }}" />
+{% for link in model._additional_css_links(request, "LIST" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+<style>
+    div.dataTables_wrapper div.dataTables_info {
+        padding-top: 0;
+    }
+
+    table.dataTable span.highlight {
+        background-color: #ffff88;
+        border-radius: 0.28571429rem;
+    }
+
+    table.dataTable span.column_highlight {
+        background-color: #ffcc99;
+        border-radius: 0.28571429rem;
+    }
+
+    table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
+    table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+        background-color: #206bc4;
+    }
+
+    table.dataTable {
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
+</style>
+
+
+{% endblock %}
+
+
+
+
+{% block script %}
+{{ super() }}
+{% for link in model._additional_js_links(request, "CREATE" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<script>
+    function myFunction() {
+        alert("I am an alert box!");
+    }
+</script>
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/form.js') }}"></script>
+
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/moment.min.js') }}"></script>
+{% if get_locale() != 'en' %}
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='i18n/momentjs/' ~ get_locale() ~ '.js') }}"></script>
+{% endif %}
+{% if 'pdf' in model.export_types %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/pdfmake.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/vfs_fonts.js') }}"></script>
+{% endif %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.checkboxes.js') }}"></script>
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.searchHighlight.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/utils.js') }}"></script>
+<script>var model = {{ __js_model__ | tojson | safe}};</script>
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='js/render_new_quotation_edit.js') }}"></script>
+{% if custom_render_js(request) %}
+<script type="text/javascript" src="{{ custom_render_js(request) }}"></script>
+{% endif %}
+{% for link in model._additional_js_links(request, "LIST" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/render_new_list_edit.js') }}"></script>
+
+
+{% endblock %}

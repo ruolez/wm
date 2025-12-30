@@ -1,0 +1,196 @@
+﻿{% extends "layout.html" %}
+{% include "print.html" %}
+{% include "forms/_remove.html" %}
+{% include "forms/_convert.html" %}
+{% block header %}
+
+
+<div class="d-flex justify-content-between align-items-center">
+    <h1>{{ model.label }}</h1>
+</div>
+{% endblock %}
+{% block content %}
+{% if obj["db_list"]|length > 1 %}
+<div class="col-sm-6 col-lg-3 mb-3">
+    <div class="card">
+        <div class="card-body">
+            {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+            {% if field.identity5 == "choose"%}
+            <div class="col-12" id="choose_db_quotation">
+                {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                error=errors.get(field.name, None) if errors else None %}
+                <label for="choicedb_source" class="antialiased"> <strong>Select source DB Quotations: </strong>
+                </label>
+                <div class="dropdown mt-2" id="choicedb_source">
+                    <button class="btn dropdown-toggle fixed-width-button justify-content-between justify-content-start"
+                        type="button" data-bs-toggle="dropdown">Select DB...</button>
+
+                    <div class="dropdown-menu">
+                        {% for o in obj["db_list"] %}
+                        <button type="submit" name="_choose_db_quotation" id="_choose_db_quotation"
+                            class="btn dropdown-item justify-content-start" type="button" data-value="{{ o }}">{{
+                            obj["db_list"][o] }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endwith %}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+
+<div class="modal modal-blur fade" id="printModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" >
+  <div class="modal-dialog modal-dialog-centered modal-dialog-full" role="document">
+    <div class="modal-content" style=" height: 97%;">
+      <div class="modal-header">
+        <h5 class="modal-title">Print</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div style="height: 71vh; overflow-y: scroll;">
+            <div id="pdfFile">
+                <embed id="pdfViewer" width="800" height="600" style ='width: 100%;'></embed>
+            </div>
+        </div>
+      </div>     
+    </div>
+  </div>
+</div>
+
+
+<table id="example" class="table table-vcenter text-nowrap table-hover cell-border " style="font-size: 12px;">
+    <thead>
+        <tr id="table-header">
+        </tr>
+    </thead>
+</table>
+{% endblock %}
+
+{% block head_css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.checkboxes.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/style.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/toastr.min.css') }}" />
+{% for link in model._additional_css_links(request, "LIST" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/moment.min.js') }}"></script>
+{% if get_locale() != 'en' %}
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='i18n/momentjs/' ~ get_locale() ~ '.js') }}"></script>
+{% endif %}
+{% if 'pdf' in model.export_types %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/pdfmake.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/vfs_fonts.js') }}"></script>
+{% endif %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.checkboxes.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/toastr.min.js') }}"></script>
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.searchHighlight.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/utils.js') }}"></script>
+
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/render_new_quotation_2.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/quotation_service.js') }}"></script>
+{% if custom_render_js(request) %}
+<script type="text/javascript" src="{{ custom_render_js(request) }}"></script>
+{% endif %}
+{% for link in model._additional_js_links(request, "LIST" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<!-- <script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/render_new_list_2.js') }}"></script>  -->
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/renderList.js') }}"></script>
+
+
+<script>
+    var model = {{ __js_model__ | tojson | safe}};
+    var newUrl = {{ url_for(__name__ ~ ':list', identity = 'quotations1_tbl')| tojson | safe}};
+    var current_user = {{ current_user| tojson | safe}};
+</script>
+
+
+<script>
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var objFromDjango = {{ obj["db_list"]| tojson | safe
+    }};
+    var propertyNamesArray = [];
+    for (var prop in objFromDjango) {
+        if (objFromDjango.hasOwnProperty(prop)) {
+            propertyNamesArray.push(prop);
+        }
+    }
+    if (propertyNamesArray.length === 1) {
+        model.dop = propertyNamesArray.shift();
+        initializeDataTable(initializeColumns().dt_columns);
+    }
+});
+
+
+
+    let dropdown = document.getElementById('choicedb_source');
+    if (dropdown) {
+        dropdown.querySelectorAll('.dropdown-item')?.forEach(function (button) {
+            button.addEventListener('click', function () {
+                dropdown.querySelector('.btn.dropdown-toggle').textContent = button?.innerText;
+                model.dop = button.getAttribute('data-value');
+
+                initializeDataTable(initializeColumns().dt_columns);
+                sessionStorage.setItem('modelDop', model.dop);
+
+            })
+        })
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var modelDopValue = sessionStorage.getItem('modelDop');
+
+        var dropdown = document.getElementById('choicedb_source');
+        if (modelDopValue) {
+
+
+            dropdown.querySelectorAll('.dropdown-item').forEach(function (button) {
+                if (button.getAttribute('data-value') === modelDopValue) {
+                    dropdown.querySelector('.btn.dropdown-toggle').textContent = button.innerText;
+                    model.dop = modelDopValue;
+
+                    initializeDataTable(initializeColumns().dt_columns);
+                }
+            });
+
+
+
+
+        }
+
+
+
+
+
+    });
+
+
+
+
+</script>
+
+{% endblock %}

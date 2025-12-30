@@ -1,0 +1,23 @@
+﻿FROM base as api1
+
+WORKDIR /api1
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+RUN pip3 install --upgrade pip && \
+    pip3 install poetry pytest
+
+ENV PATH="/root/.local/bin:$PATH"
+
+COPY pyproject.toml poetry.lock ./
+
+RUN poetry install --no-root --no-interaction --no-ansi
+
+COPY . .
+
+EXPOSE 8000
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["poetry", "run", "uvicorn", "api1.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

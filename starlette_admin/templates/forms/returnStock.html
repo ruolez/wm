@@ -1,0 +1,109 @@
+<div class="modal fade" id="returnStock" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" >
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-status bg-red"></div>
+        <div class="modal-body text-center py-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-red icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M12 9v2m0 4v.01" />
+            <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
+          </svg>
+          <h3>Warning</h3>
+          <div class="text-secondary">All Products must be returned to shelves! </div>
+        </div>
+        <div class="modal-footer">
+          <div class="w-100">
+            <div class="row">
+              <div class="col" id="returnStock"><a href="#" class="btn btn-warning w-100" id="okreturnStock" data-bs-dismiss="modal">
+                  OK
+              </a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    let rindex;
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter' && document.getElementById('returnStock').classList.contains('show')) {
+        document.getElementById('okreturnStock').click();
+      }
+    });
+
+    function showMessage(message, rowIndex, callback) {
+    document.querySelector('#returnStock .text-secondary').innerText = message;
+
+    // Удаляем предыдущие обработчики, чтобы избежать дублирования
+    $('#returnStock').off('shown.bs.modal');
+
+    // Добавляем новый обработчик для показа модального окна
+    $('#returnStock').on('shown.bs.modal', function () {
+        let table = $('#example').DataTable();
+        table.rows().deselect(); // Сбрасываем выделение всех строк
+        table.row(rowIndex).select(); // Выделяем нужную строку
+        rindex = rowIndex;
+    });
+
+    // Показываем модальное окно
+    $('#returnStock').modal('show');
+
+    // Обработчик на кнопку 'OK'
+    document.getElementById('okreturnStock').onclick = function () {
+
+        $('#returnStock').modal('hide');
+       // let table = $('#example').DataTable();
+
+// Обновляем статус в строке
+//let rowData = table.row(rindex).data(); // Получаем текущие данные строки
+//rowData.StatusQuotation = 'New'; // Изменяем статус
+//table.row(rindex).data(rowData).draw(); // Обновляем данные в таблице
+
+// Триггерим повторную фильтрацию
+//
+       // Выделяем нужную строку
+         // Выделяем нужную строку // Закрываем модальное окно
+        callback(); // Выполняем callback после закрытия
+    };
+
+
+
+    const selectedStatuses = [];
+    const matchingQuotationNumbers = [];
+    const table = $('#example').DataTable();
+
+    // Собираем выбранные статусы из чекбоксов
+    $('.form-check-input.st:checked').each(function () {
+        selectedStatuses.push($(this).val().toLowerCase().replace(/\s/g, ''));
+    });
+
+    // Создаём регулярное выражение для фильтра
+    const regex = selectedStatuses.join('|');
+
+    // Применяем фильтрацию строк
+    table.rows().every(function () {
+        const rowData = this.data();
+        const status = rowData.StatusQuotation.toLowerCase().replace(/\s/g, '');
+
+        if (regex && new RegExp(regex).test(status)) {
+            matchingQuotationNumbers.push(rowData.QuotationNumber);
+        }
+    });
+
+    // Используем заглушку, если совпадений нет
+    let quotationRegex = matchingQuotationNumbers.join('|');
+    if (!quotationRegex) {
+        quotationRegex = '9999999999';
+    }
+
+    // Применяем фильтр к колонке
+    table.column(1).search(quotationRegex, true, false).draw();
+}
+
+
+
+
+    </script>

@@ -1,0 +1,117 @@
+﻿{% extends "layout.html" %}
+{% set pk = model.pk_attr %}
+{% block header %}
+    <div class="d-flex justify-content-between align-items-center">
+
+        <h1>{{ model.label }}</h1>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ url_for(__name__ ~ ':index') }}">{{ _("Admin") }}</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{{ url_for(__name__ ~ ':list', identity=model.identity) }}">{{ model.label }}</a>
+            </li>
+            <li class="breadcrumb-item active">{{ _("Detail") }}</li>
+        </ol>
+    </div>
+{% endblock %}
+{% block modal %}
+    {{ super() }}
+    {% include "modals/loading.html" %}
+    {% include "modals/error.html" %}
+    {% include "modals/delete.html" %}
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <strong>#{{ obj[pk] }}</strong>
+                        </h3>
+                        <div class="card-actions">
+                            <div class="btn-list">
+                                {% if model.can_edit(request) %}
+
+                                <a href="{{ url_for(__name__ ~ ':edit', identity=model.identity,pk=111) }}">
+                                        <button type="button" class="btn btn-primary btn-block me-2">
+                                            <i class="fa-solid fa-edit me-2"></i>
+                                            {{ _("Edit") }}
+                                        </button>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% block details_table %}
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-vcenter table-mobile-md">
+                                    <thead>
+                                    <tr>
+                                        {% for field in obj[0] %}
+                                        <th>{{ field }}</th>
+                                    {% endfor %}
+                                    </tr>
+                                        {% for int in obj[:1000] %}
+                                    <tr>
+                                        {% for field in int %}
+                                        <th>{{ int[field] }}</th>
+                                    {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                    </thead>
+
+
+                                </table>
+                            </div>
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block head_css %}
+    {{ super() }}
+    {% for link in model._additional_css_links(request, "DETAIL" | ra) %}
+        <link rel="stylesheet" href="{{ link }}">
+    {% endfor %}
+{% endblock %}
+{% block script %}
+    {{ super() }}
+    <script type="text/javascript"
+            src="{{ url_for(__name__ ~ ':statics', path='js/utils.js') }}"></script>
+    {% for link in model._additional_js_links(request, "DETAIL" | ra) %}
+        <script type="text/javascript" src="{{ link }}"></script>
+    {% endfor %}
+    <script>
+    $(function () {
+        $("#modal-delete-btn").click(function () {
+            $("#modal-delete").modal('hide');
+            $("#modal-loading").modal('show');
+    fetch("{{ url_for(__name__ ~ ':action', identity=model.identity)  | safe }}?name=delete&pks={{ obj }}", {
+                method: "POST",
+            }).then(async response => {
+                if (response.ok) {
+                    await new Promise(r => setTimeout(r, 500));
+                    $("#modal-loading").modal('hide')
+                    window.location.replace("{{ url_for(__name__ ~ ':list', identity=model.identity)  | safe }}")
+                } else {
+                    if (response.status == 400) {
+                        return Promise.reject((await response.json())["msg"]);
+                    }
+                    return Promise.reject("Something went wrong!");
+                }
+
+            }).catch(async (error) => {
+                await new Promise(r => setTimeout(r, 500));
+                $("#modal-loading").modal('hide');
+                $("#error-body").text(error);
+                $("#modal-error").modal('show');
+            });
+        });
+    })
+    </script>
+{% endblock %}

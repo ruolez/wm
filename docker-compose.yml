@@ -1,0 +1,87 @@
+version: "3.8"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD:-StrongPass123!}
+      - MSSQL_PID=Express
+    ports:
+      - '1433:1433'
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - warehouse-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${SA_PASSWORD}" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  api1:
+    build:
+      context: ./api1
+      dockerfile: Dockerfile.api1
+    container_name: api1
+    restart: unless-stopped
+    working_dir: /api1
+    ports:
+      - '8000:8000'
+    env_file:
+      - .env
+    volumes:
+      - ./:/api1
+    networks:
+      - warehouse-network
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  api_admin:
+    build:
+      context: ./api_admin
+      dockerfile: Dockerfile.api_admin
+    container_name: api_admin
+    restart: unless-stopped
+    working_dir: /api_admin
+    ports:
+      - '5000:5000'
+    env_file:
+      - .env
+    volumes:
+      - ./api_admin:/api_admin
+    networks:
+      - warehouse-network
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.nginx
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    depends_on:
+      - api1
+      - api_admin
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./:/usr/app/src
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - warehouse-network
+
+networks:
+  warehouse-network:
+    driver: bridge
+
+volumes:
+  sqlserver-data:

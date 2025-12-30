@@ -1,0 +1,268 @@
+﻿{% extends "layout.html" %}
+{% block header %}
+<div class="d-flex justify-content-between align-items-center">
+    <h1>{{ model.label }}</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':index') }}">{{ _("Admin") }}</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':list', identity=model.identity) }}">{{ model.label }}</a>
+        </li>
+        <li class="breadcrumb-item active">{{ _("Create") }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <form action="{{ request.url | safe }}" method="POST" enctype="multipart/form-data">
+                    <div class="card-header">
+                        <div class="container-fluid">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+
+                                <h3 class="card-title">Inventory Update</h3>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="card-body border-bottom py-3">
+                        {% block create_form %}
+
+                        {%if update %}
+                        <h3 class="card-title" style="color: green;">{{update}}</h3>
+                        {% endif %}
+
+                        {%if update_error %}
+                        <h3 class="card-title" style="color: red;">{{update_error}}</h3>
+                        {% endif %}
+
+                        {%if update_error_list %}
+                        {% for er in update_error_list %}
+                        <h3 class="card-title" style="color: red;">{{er}}</h3>
+                        {% endfor %}
+                        {% endif %}
+
+
+
+                        {#
+                        <div class="row">
+                            {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+                            <div class="col-4">
+                                <div class="mb-3">
+                                    {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                    error=errors.get(field.name, None) if errors else None %}
+                                    {% include field.label_template %}
+                                    {% include field.form_template %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            <div class="card-footer text-black">
+                                <div class="btn-list ms-auto justify-content-end">
+                                    <a href="{{ url_for(__name__ ~ ':list', identity=model.identity) }}"
+                                        class="btn btn-danger">{{ _("Reset") }}</a>
+                                    <button type="submit" name="_reserve_quotation" class="btn btn-success">{{
+                                        _("Reserve") }}</button>
+
+                                    {% if 'lineid' in request._form['QUERY']|lower %}
+
+                                    <a
+                                        href="{{ url_for(__name__ ~ ':create_invoice', identity=model.identity) }}?choicedb_source=={{ request._form.choicedb_source }}?choicedb_destination=={{ request._form['choicedb_destination'] }}?invoice=={{ request._form.invoice }}?QUERY=={{ obj['QUERY'] }}">
+                                        <button type="button" class="btn btn-primary btn-block me-2">
+                                            Create Invoice Details
+                                        </button>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        }
+
+                        #}
+
+
+
+
+
+
+
+                        {% endblock %}
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div id="btn_container" class="card-title"></div>
+                    <div class="card-actions">
+                        <div class="btn-list">
+                            <div class="dropdown" id="actions-dropdown" style="display: none">
+                                <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                                    id="actionDropdownButton">
+                                    {{ _("With selected") }} (<span class="actions-selected-counter">0</span>)
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="actionDropdownButton">
+                                    {% for action in _actions %}
+                                    <a class="dropdown-item action-item" type="button" href="#" {% if
+                                        action.confirmation is not none %} data-bs-toggle="modal"
+                                        data-bs-target="#modal-action" data-confirmation="{{ action.confirmation }}" {%
+                                        else %} data-no-confirmation-action="true" {% endif %} {% if
+                                        action.custom_response %} data-custom-response="true" {% endif %}
+                                        data-name="{{ action.name }}"
+                                        data-submit-btn-text="{{ action.submit_btn_text }}"
+                                        data-submit-btn-class="{{ action.submit_btn_class }}"
+                                        data-form="{{ action.form }}">
+                                        {{ action.text }}
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body border-bottom p-0">
+                    <div class="d-flex m-3">
+                        <div id="pageLength_container"></div>
+                        <div class="ms-auto text-muted">
+                            <div class="ms-2 d-inline-block">
+                                <div class="input-icon">
+                                    <span class="input-icon-addon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <circle cx="10" cy="10" r="7" />
+                                            <line x1="21" y1="21" x2="15" y2="15" />
+                                        </svg>
+                                    </span>
+                                    <input type="search" id="searchInput" value="" class="form-control"
+                                        placeholder="{{ _('Search') }}..." aria-label="Search in list" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="alertContainer"></div>
+                </div>
+                <table id="dt" class="table table-vcenter text-nowrap" style="font-size: 12px;">
+                    <thead>
+                        <tr id="table-header">
+
+                        </tr>
+
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block head_css %}
+{{ super() }}
+{% for link in model._additional_css_links(request, "CREATE" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+<style>
+    .is-invalid .select2-selection {
+        border-color: #d63939 !important;
+    }
+</style>
+
+
+
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.checkboxes.css') }}" />
+{% for link in model._additional_css_links(request, "LIST" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+<style>
+    div.dataTables_wrapper div.dataTables_info {
+        padding-top: 0;
+    }
+
+    table.dataTable span.highlight {
+        background-color: #ffff88;
+        border-radius: 0.28571429rem;
+    }
+
+    table.dataTable span.column_highlight {
+        background-color: #ffcc99;
+        border-radius: 0.28571429rem;
+    }
+
+    table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
+    table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+        background-color: #206bc4;
+    }
+
+    table.dataTable {
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
+</style>
+
+
+{% endblock %}
+
+
+
+{% block script %}
+{{ super() }}
+{% for link in model._additional_js_links(request, "CREATE" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/form.js') }}"></script>
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/moment.min.js') }}"></script>
+{% if get_locale() != 'en' %}
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='i18n/momentjs/' ~ get_locale() ~ '.js') }}"></script>
+{% endif %}
+{% if 'pdf' in model.export_types %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/pdfmake.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/vfs_fonts.js') }}"></script>
+{% endif %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.checkboxes.js') }}"></script>
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.searchHighlight.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/utils.js') }}"></script>
+<script>var model = {{ __js_model__ | tojson | safe}};</script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/render.js') }}"></script>
+{% if custom_render_js(request) %}
+<script type="text/javascript" src="{{ custom_render_js(request) }}"></script>
+{% endif %}
+{% for link in model._additional_js_links(request, "LIST" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/list.js') }}"></script>
+
+
+{% endblock %}

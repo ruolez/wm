@@ -1,0 +1,24 @@
+﻿{% set fpk = "id" %}
+{% set bb = field.identity2 %}
+
+<div class="{% if error %}{{ field.error_class }}{% endif %}">
+    <select id="{{ field.id }}"
+            name="{{ field.id }}"
+            data-allow-clear="true"
+            data-placeholder="{{ _('Select a %(label)s', label=bb) }}"
+            class="form-control {{ 'field-has-one' if not field.many else 'field-has-many' }}"
+            data-url="{{ url_for(__name__ ~ ':api', identity=field.identity1) }}/{{ field.identity2 }}"
+            data-pk="{{ fpk }}"
+            {% if data %}data-initial="{{ (data if field.multiple else [data]) |join(',') }}" {% endif %}
+            {% if field.multiple %}multiple{% endif %}
+            {% if field.disabled %}disabled{% endif %}
+            {% if field.select2 %}data-role="select2"{% endif %}>
+                    {% if not field.multiple and not field.required %}
+            <option></option>
+        {% endif %}
+    </select>
+    {% if field.help_text %}
+        <small class="form-hint mt-2">{{ field.help_text }}</small>
+    {% endif %}
+</div>
+{% include "forms/_error.html" %}

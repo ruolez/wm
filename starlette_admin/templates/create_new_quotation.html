@@ -1,0 +1,739 @@
+﻿{% extends "layout.html" %}
+{% include "print.html" %}
+{% include "forms/_remove.html" %}
+{% include "forms/_convert.html" %}
+{% include "forms/_print.html" %}
+{% include "forms/_confirmClose.html" %}
+
+
+{% block header %}
+<div class="container">
+  <div class="d-flex justify-content-start align-items-start">
+
+    <h2 id="labelH1">NEW QUOTATION</h2> <span id="changedLabel"class="badge bg-teal" style="margin-left: 15px; display: none;">Changed</span>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <form id="quotationForm">
+        <div>
+          <div class="d-flex align-items-center">
+            <div class="dropdown mb-2 hidden" id="dbDropdown">
+              <button class="btn dropdown-toggle shadow drowpdownlayout dbDropdown" type="button" id="dropdownMenuButton"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Select DB...
+              </button>
+              <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton" id="dropdownMenu">
+                <!-- Dropdown items will be added dynamically here -->
+              </div>
+            </div>
+            <div>
+              <div style="margin-left: 1.6rem; display: none !important;" id="readonlyContainer" class="d-flex">
+                <label class="form-check form-switch d-flex" id="readonlycheck" style="display: none;">
+                  <input class="form-check-input" id="readonlyCheck" type="checkbox" checked style="cursor: pointer;">
+                  <span class="form-check-label" style="margin-left: 0.5rem">Read only</span>
+                </label>
+                <span id="readonly-help" class="form-help help-content"  data-bs-trigger="hover" data-bs-toggle="popover" data-bs-placement="top" data-bs-html="true" data-bs-content="" style="margin-left: 0.4rem; background-color: #FFAD09; font-size: small;">i</span>
+              </div>
+            </div>
+          </div>
+          <div class="card shadow disabled" style="height: 57.625rem" id="mainqtn" tabindex="-1">
+            <div class="card-header" tabindex="-1">
+              <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" tabindex="-1">
+                <li class="nav-item" tabindex="-1">
+                  <a href="#tabs-home-ex2" class="nav-link active" data-bs-toggle="tab" id="generaltab">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="icon icon-tabler icons-tabler-outline icon-tabler-file">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                    </svg>
+                    General</a>
+                </li>
+                <li class="nav-item" tabindex="-1">
+                  <a href="#tabs-profile-ex2" class="nav-link" data-bs-toggle="tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="icon icon-tabler icons-tabler-outline icon-tabler-truck">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                      <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                      <path d="M5 17h-2v-11a1 1 0 0 1 1 -1h9v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5" />
+                    </svg>
+                    Bill/Ship to</a>
+                </li>
+                <li class="nav-item " tabindex="-1">
+                  <a href="#tabs-details-ex3" class="nav-link disabled" data-bs-toggle="tab">
+                    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-report-analytics"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" /><path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" /><path d="M9 17v-5" /><path d="M12 17v-1" /><path d="M15 17v-3" /></svg>
+                    Product Details</a>
+                </li>
+                <li class="nav-item ms-auto">
+                  <div class="d-flex align-items-center">
+                    <div>
+                      <button type="button" class="nav-link" id="CloseButton" onclick="ShowConfirmModal()" title="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="m-0 icon icon-tabler icons-tabler-outline icon-tabler-x">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                          <path d="M18 6l-12 12" />
+                          <path d="M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                 </li>
+
+
+
+
+              </ul>
+            </div>
+
+            <div class="card-body">
+
+              <div class="row row-deck row-cards custom-row-flex mb-3" id="cusmordetails">
+                <div class="col-md-6 col-lg-4">
+                  <div class="card card-no-border-top shadow">
+                    <div class="hr-text">
+                      <h4><span>Quotation</span></h4>
+                    </div>
+                    <div class="card-body" style="height: 10rem;display: flex;flex-direction: column; ">
+
+                      <label for="qnumber" class="form-label"><strong> Quotation number: </strong></label>
+                      <input type="number" class="form-control" id="qnumber" name="qnumber" min="0" placeholder="*New"
+                      readonly disabled autocomplete="off">
+
+
+                      <label for="qdate" class="form-label"> <strong> Date: </strong> </label>
+                      <input type="date" class="form-control" id="qdate" name="qdate" autocomplete="off">
+                      <div>
+
+
+
+                      <div style="
+                      display: flex;
+                      justify-content: flex-end;
+                      padding-top: 27px;">
+
+                            <label for="priceLevelDropdown" class="form-label m-0 mx-lg-2" style="display: flex;align-items: center;"> <strong> Price Level: </strong> </label>
+                            <div class="dropdown" >
+                              <button class="btn dropdown-toggle lookinDropdown drowpdownlayout" type="button" id="priceLevelDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" data-value="1" tabindex="-1" >
+                                Custom
+                              </button>
+                              <ul class="dropdown-menu scrollable-menu" aria-labelledby="priceLevelDropdown" id="priceLeveldownmenu">
+                                <li><a class="dropdown-item" data-value="custom">Custom</a></li>
+                                <li><a class="dropdown-item" data-value="standard">Standard</a></li>
+                                <li><a class="dropdown-item" data-value="deliveryb">Delivery B</a></li>
+                              </ul>
+
+                          </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ribbon ribbon-bottom ribbon-start  bg-cyan-lt display-none ribbon-bottom-qu" id="invoiceLabel" >
+
+                  </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-lg-8">
+                  <div class="card card-no-border-top shadow">
+                    <div class="hr-text">
+                      <h4><span>Customer</span></h4>
+                    </div>
+
+                    <div class="card-body">
+                      <div style="display: flex;">
+                        <!-- left -->
+                        <div style="margin-right: 10px;">
+                          <div>
+                            <label for="bname" class="form-label required"> <strong> Business Name: </strong> </label>
+                                  <div class="drowpdownlayout advselect">
+                                    <div class="input-wrapper">
+                                      <input id="bnameInput" type="text" name="bnameInput" placeholder="Type to search..."
+                                        class="form-control" autocomplete="off">
+                                      <span class="arrow"></span>
+                                    </div>
+                                  </div>
+                          </div>
+
+
+
+                          <div>
+                            <label for="srep" class="form-label required"> <strong> Sales Rep: </strong> </label>
+                            <div class="dropdown" id="salesRepDropDown">
+                              <button class="btn  dropdown-toggle drowpdownlayout dbDropdown" type="button"
+                                id="srepDropdownButton" data-bs-toggle="dropdown" aria-expanded="false" id="srepDropdown">
+                                Select Sales Rep
+                              </button>
+                              <ul class="dropdown-menu scrollable-menu" aria-labelledby="srepDropdown" id="srepdropdown-menu">
+                                <!-- Dropdown items will be added dynamically here -->
+                              </ul>
+                            </div>
+                          </div>
+
+                        </div>
+
+
+
+                        <!-- right -->
+                        <div>
+                            <div class="d-flex justify-content-between">
+                              <div>
+                                <label for="acnum" class="form-label required"> <strong> Account Number: </strong> </label>
+                                <div class="drowpdownlayout advselect">
+                            <div class="input-wrapper">
+                              <input id="acnumInput" type="text" name="myCountry" placeholder="Type to search..."
+                                class="form-control" autocomplete="off">
+                              <span class="arrow"></span>
+                            </div>
+                            </div>
+                              </div>
+                              <div>
+                                <span id="form-help" class="form-help" data-bs-toggle="popover" data-bs-placement="top" data-bs-html="true" data-bs-content="" >?</span>
+                              </div>
+                            </div>
+                            <!-- data-bs-trigger="hover" -->
+
+                          <div>
+                            <label for="customerMemo" class="form-label"> <strong> Customer Memo: </strong> </label>
+                            <textarea id="customerMemo" class="form-control" name="example-textarea" placeholder="There are no customer memo for this client" rows="4" cols="65" style="resize:none" tabindex="-1"></textarea>
+                          </div>
+
+                        </div>
+                      </div>
+
+
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="tab-content m-0" >
+                <div class="tab-pane  active show" id="tabs-home-ex2">
+                  <div class="card shadow" id="tablezone">
+                    <div style="height: 25.375rem;overflow-x: hidden; overflow-y: scroll;  margin-bottom: 7px;">
+                      <table id="items-table"
+                        class="table table-vcenter text-nowrap table-hover cell-border table-bordered cell-border compact stripe">
+                        <thead >
+                          <tr>
+                            <th>Qty</th>
+                            <th>Description</th>
+                            <th>Unit Price</th>
+                            <th>Unit Cost</th>
+                            <th>SKU</th>
+                            <th>UPC</th>
+                            <th>Stock</th>
+                            <th>Total</th>
+                            <th>Profit Margin</th>
+                            <th>Comment</th>
+                            <th>Total Cost</th>
+                            <th> <button class="btn btn-sm btn-icon btn-ghost-grey rotate-icon" id="refreshstock" onclick="RefreshStock(event)" title="Refresh Stock">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-refresh">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+                                <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+                              </svg>
+                            </button></th>
+                          </tr>
+                        </thead>
+
+
+                      </table>
+                    </div>
+
+                    <div class="d-flex align-items-center ml-5">
+                      <div style="width: 45px; height: 15px; background-color: var(--tblr-highlight-bg); color: white;" class="mr-1"></div>
+                      <div style="font-size: 9px;"> Remembered Price</div>
+                    </div>
+                    <div>
+                      <div class="d-flex justify-content-center col-12">
+                        <div class="row row-cards" id="searchPanel">
+                            <div class="col-md-6 col-lg-12 d-flex align-items-center">
+                                <div class="d-flex form-group">
+                                    <input type="button" id="quickSearchButton" class="btn" value="[F2] UPC" data-id="2" tabindex="-1" autocomplete="off">
+                                    <input type="text" class="form-control" name="quicksearch" id="quicksearch" autocomplete="off">
+                                    <button type="button" id="browseItemsButton" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal">
+                                        [F3] Browse Items
+                                    </button>
+                                </div>
+                                <label class="form-check form-check-inline align-items-center">
+                                    <input class="form-check-input" type="checkbox" checked id="groupitems" autocomplete="off">
+                                    <span class="form-check-label">Group Items</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+
+                      <div>
+
+
+                        <div class="d-flex flex-column align-items-end p-3 ">
+                          <div class="me-3" id="totalitems">
+                            Total items: <strong>0</strong>
+                          </div>
+                          <div class="me-3" id="totalqty">
+                            Total Quantity: <strong>0</strong>
+                          </div>
+
+                          <div class="me-3" id="totalcost">
+                            Total Cost: $<strong>0</strong>
+                          </div>
+
+
+                          <div class="me-3" id="totalprice">
+                            Total Price: $<strong>0</strong>
+                          </div>
+
+                          <div class="me-3" id="totalprofitmargin">
+                            Total Margin Profit: <strong>0</strong>
+                          </div>
+                          <div>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane " id="tabs-profile-ex2">
+                  <div class="row row-cards justify-content-between">
+                    <div class="col-md-6 col-lg-4-1">
+                      <div class="card card-no-border-top shadow">
+                        <div class="hr-text">
+                          <h4><span>Billing Address</span></h4>
+                        </div>
+                        <div class="card-body">
+
+                          <label for="bstreet" class="form-label"><strong> Street: </strong></label>
+                          <input type="text" class="form-control small-margin-buttom" id="bstreet" name="bstreet"
+                            disabled value="" autocomplete="off">
+                          <input type="text" class="form-control" id="bstreet2" name="bstreet2" disabled value="" autocomplete="off"><br>
+
+                          <label for="bcity" class="form-label"><strong> City: </strong></label>
+                          <input type="text" class="form-control" id="bcity" name="bcity" disabled value="" autocomplete="off"><br>
+
+                          <label for="bstate" class="form-label"><strong> State: </strong></label>
+                          <input type="text" class="form-control" id="bstate" name="bstate" disabled value="" autocomplete="off"><br>
+
+
+                          <label for="bzip" class="form-label"><strong> Zip: </strong></label>
+                          <input type="text" class="form-control" id="bzip" name="bzip" value="" disabled autocomplete="off"><br>
+
+                          <label for="bcname" class="form-label"><strong> Contact Name: </strong></label>
+                          <input type="text" class="form-control" id="bcname" name="bcname" disabled value="" autocomplete="off"><br>
+
+                          <label for="bphone" class="form-label"><strong> Phone: </strong></label>
+                          <input type="text" class="form-control" id="bphone" name="bphone" disabled value=""  autocomplete="off"><br>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div class="col-md-6 col-lg-1">
+                      <div class="col-lg-12 d-flex flex-column align-items-center">
+                        <button type="button" class="btn col-sm-4" id="copyButton" title="Same as Bill to">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="m-0 icon icon-tabler icons-tabler-outline icon-tabler-arrow-right">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 12l14 0" />
+                            <path d="M13 18l6 -6" />
+                            <path d="M13 6l6 6" />
+                          </svg>
+                        </button>
+                        <button type="button" class="btn col-sm-4" id="getShipfromCustomer"
+                          title="Reset to customer's ship to">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="m-0 icon icon-tabler icons-tabler-outline icon-tabler-exchange">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                            <path d="M19 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                            <path d="M19 8v5a5 5 0 0 1 -5 5h-3l3 -3m0 6l-3 -3" />
+                            <path d="M5 16v-5a5 5 0 0 1 5 -5h3l-3 -3m0 6l3 -3" />
+                          </svg>
+                        </button>
+                        <button type="button" class="btn col-sm-4" id="resetShip" title="Remove ship to">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="#bb1b1b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="m-0 icon icon-tabler icons-tabler-outline icon-tabler-x">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M18 6l-12 12" />
+                            <path d="M6 6l12 12" />
+                          </svg>
+                        </button>
+
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4-1">
+                      <div class="card card-no-border-top shadow">
+                        <div class="hr-text">
+                          <h4><span>Ship to</span></h4>
+                        </div>
+                        <div class="card-body">
+
+                          <label for="shipName" class="form-label"><strong> Name: </strong></label>
+                          <input type="text" class="form-control small-margin-buttom" id="shipName" name="sstreet" autocomplete="off">
+
+                          <label for="sstreet" class="form-label"><strong> Street: </strong></label>
+                          <input type="text" class="form-control small-margin-buttom" id="sstreet" name="sstreet" autocomplete="off">
+                          <input type="text" class="form-control" id="sstreet2" name="sstreet2" autocomplete="off"><br>
+
+                          <label for="scity" class="form-label"><strong> City: </strong></label>
+                          <input type="text" class="form-control" id="scity" name="sstreet2" autocomplete="off"><br>
+
+                          <label for="sstate" class="form-label"><strong> State: </strong></label>
+                           <div class="drowpdownlayout advselect width100">
+                            <div class="input-wrapper width100">
+                              <input id="sstate" type="text" name="sstateInput"
+                                class="form-control width100" autocomplete="off">
+                              <span class="arrow"></span>
+
+                            </div>
+                            <br>
+                          </div>
+
+
+                          <label for="szip" class="form-label"><strong> Zip: </strong></label>
+                          <input type="text" class="form-control" id="szip" name="szip" value=""  autocomplete="off"><br>
+
+                          <label for="scname" class="form-label"><strong> Contact Name: </strong></label>
+                          <input type="text" class="form-control" id="scname" name="scname" autocomplete="off"><br>
+
+                          <label for="sphone" class="form-label"><strong> Phone: </strong></label>
+                          <input type="text" class="form-control" id="sphone" name="sphone" value=""  autocomplete="off"><br>
+
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-2 mt-0">
+                      <div>
+                        <label for="terms" class="form-label"> <strong> Terms: </strong> </label>
+                        <div class="dropdown" id="termsDropDown">
+                          <button class="btn dropdown-toggle drowpdownlayout dbDropdown drop-second-page" type="button"
+                            id="terDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Terms
+                          </button>
+                          <ul class="dropdown-menu scrollable-menu" aria-labelledby="termsDropdown" id="termsdropdown-menu">
+                            <!-- Dropdown items will be added dynamically here -->
+                          </ul>
+                          <input type="hidden" id="terms" name="terms" autocomplete="off">
+                        </div>
+                        <br>
+                      </div>
+
+                      <div>
+                        <label for="shipvia" class="form-label"> <strong> Ship Via: </strong> </label>
+                        <div class="dropdown" id='shipViaDropDown'>
+                          <button class="btn dropdown-toggle drowpdownlayout dbDropdown drop-second-page" type="button"
+                            id="shipvDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Ship Via
+                          </button>
+                          <ul class="dropdown-menu scrollable-menu" aria-labelledby="shipviaDropdown" id="shipviadropdown-menu">
+                            <!-- Dropdown items will be added dynamically here -->
+                          </ul>
+                          <input type="hidden" id="shipvia" name="terms" autocomplete="off">
+                        </div>
+                        <br>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="tab-pane" id="tabs-details-ex3">
+                  <div class="card shadow" style="height: 100%;width: 100%;" id="details-tablezone">
+
+                    <!-- overflow-x: scroll; -->
+                    <div style="height: 51.375rem;  overflow-y: scroll;  margin-bottom: 7px; width: 100%;">
+                      <div id="spinner-container" class="spinner-container">
+                        <div class="spinner-border"> </div>
+                        <br><p></p>
+                        <div>Loading....</div>
+                    </div>
+
+
+                      <div id="details-table-container">
+
+
+                      <table id="details-table"
+                        class="table table-vcenter text-nowrap table-hover cell-border table-bordered cell-border compact stripe width100 details-table">
+
+                        <thead >
+                          <tr>
+                            <th>Description</th>
+                            <th>Cost</th>
+                            <th>Standard</th>
+                            <th>Delivery B</th>
+                            <th>Custom</th>
+                            <th>Stock</th>
+                            <th>Reserved</th>
+                            <th>Incoming</th>
+                            <th>Qty</th>
+                            <th>Last Price</th>
+                            <th>Last Sale Date</th>
+                          </tr>
+                        </thead>
+                       </table>
+                      </div>
+
+                      </div>
+                  </div>
+
+                </div>
+
+
+              </div>
+            </div>
+
+          </div>
+
+
+
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-list mt-3" id="removeButtonWrapper">
+              <button type="button" class="btn btn-outline-danger" id="removeButton" onclick="DeleteModal()" disabled>Delete Quotation</button>
+            </div>
+            <div class="btn-list mt-3" id="actionButtonsWrapper">
+              <button style="display: none;" type="button" class="btn btn-outline-secondary" id="ToProgressButton" onclick="SendToProgress()" disabled> To Progress</button>
+
+              <span title="Action allowed only if Quotation status is 'Locked'."><button type="button" class="btn btn-outline-warning" id="ConvertButton" onclick="ConvertQuotation()" disabled> Convert to Invoice</button></span>
+              <button type="button" class="btn btn-outline-primary" id="submitAndSaveButton" onclick="SaveAndCloseQuotation()"> Save and Close </button>
+              <button type="button" class="btn btn-outline-primary" id="submitButton" onclick="SaveQuotation()">Save</button>
+              <button type="button" class="btn btn-outline-success" id="printButton" onclick="SaveAndPrintQuotation()">Save and Print</button>
+              <button type="button" class="btn btn-outline-success" style="display: none;" id="print" onclick="SaveAndPrintQuotation(false)">Print</button>
+            </div>
+          </div>
+
+      </form>
+
+    </div>
+  </div>
+
+
+
+</div>
+
+
+<div class="modal modal-blur fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" >
+  <div class="modal-dialog modal-dialog-centered modal-dialog-full" role="document">
+    <div class="modal-content" style=" height: 97%;">
+      <div class="modal-header">
+        <h5 class="modal-title">Browse items</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div style="height: 71vh; overflow-y: scroll;">
+          <table id="browse-items-table" class="table table-vcenter text-nowrap table-hover cell-border table-bordered">
+            <thead>
+              <th class="selected-column">S</th>
+              <th class="qty-column td-wrapper">Qty</th>
+              <th class="description-column">Description</th>
+              <th class="unit-price-column" >Unit Price</th>
+              <th class="unit-cost-column">Unit Cost</th>
+              <th class="sku-column">SKU</th>
+              <th class="upc-column" >UPC</th>
+              <th class="stock-column">Stock</th>
+              <th class="total-column">Total</th>
+              <th class="total-cost-column display-none" >TotalCost</th>
+              <th class="comment-column display-none" >Comment</th>
+            </thead>
+          </table>
+        </div>
+        <br>
+
+
+
+
+      </div>
+      <div class="d-flex align-items-center ml-5">
+        <div style="width: 45px; height: 15px; background-color: var(--tblr-highlight-bg); color: white;" class="mr-1"></div>
+        <div style="font-size: 9px;"> Remembered Price</div>
+      </div>
+      <div class="modal-footer d-flex justify-content-between">
+
+        <div class="col-8 d-flex align-items-start justify-content-sm-start">
+          <div class="col-3 d-flex align-items-center justify-content-between">
+            <label for="lookin" class="form-label m-0 mx-lg-2"> <strong> Look in: </strong> </label>
+            <div class="dropdown" >
+              <button class="btn dropdown-toggle lookinDropdown drowpdownlayout" type="button" id="lookinDropdown"
+                data-bs-toggle="dropdown" aria-expanded="false" data-value="1" tabindex="-1" >
+                SKU
+              </button>
+              <ul class="dropdown-menu scrollable-menu" aria-labelledby="lookinDropdown" id="lookinDropdownmenu">
+                <li><a class="dropdown-item" data-value="1">SKU</a></li>
+                <li><a class="dropdown-item" data-value="2">UPC</a></li>
+                <li><a class="dropdown-item" data-value="3">Decription</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-9 d-flex align-items-center justify-content-between">
+            <label for="modalsearch" class="form-label m-0 mx-lg-2 col-1-1"> <strong> for value: </strong> </label>
+            <input type="text" class="form-control col-10" id="modalsearch" name="modalsearch" placeholder="Search…" autocomplete="off">
+          </div>
+        </div>
+
+
+
+        <div class="col-2 d-flex align-items-start justify-content-sm-start">
+          <button class="btn btn-primary" id="addItemButton" tabindex="-1">Add Items</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<input type="hidden" name="QuotationID" id="QuotationID">
+<input type="hidden" name="InvoiceID" id="InvoiceNumber">
+<input type="hidden" name="IsManager" id="IsManager">
+<input type="hidden" name="IsAdmin" id="IsAdmin">
+
+<input type="hidden" name="ReadOnly" id="ReadOnly">
+<input type="hidden" name="ReadOnlyUser" id="ReadOnlyUser">
+<input type="hidden" name="ReadOnlyTime" id="ReadOnlyTime">
+
+
+
+{% endblock %}
+
+
+<!-- css block -->
+{% block head_css %}
+{{ super() }}
+
+
+{% for link in model._additional_css_links(request, "CREATE" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+
+
+<style>
+  .is-invalid .select2-selection {
+    border-color: #d63939 !important;
+  }
+
+  .custom-card-header {
+    padding-top: 5%;
+    padding-bottom: 5%;
+  }
+
+</style>
+
+
+
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/toastr.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/main.css') }}" />
+<link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.0.7/css/scroller.dataTables.min.css">
+
+
+{% for link in model._additional_css_links(request, "LIST" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+
+
+
+{% endblock %}
+
+
+{% block script %}
+{{ super() }}
+{% for link in model._additional_js_links(request, "CREATE" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<script>
+  var DB = sessionStorage.getItem('modelDop');
+  var newUrl = {{ url_for(__name__ ~ ':list', identity = 'SourceDB')| tojson | safe}};
+  var newUrl = {{ url_for(__name__ ~ ':SourceDB', identity = 'quotations1_tbl')| tojson | safe}};
+
+  var db_list = $.ajax({
+    url: newUrl,
+    type: "get",
+    traditional: true,
+    dataType: "json",
+    success: function (data, status, xhr) {
+      db_list = data.items;
+    },
+  });
+  document.addEventListener("DOMContentLoaded", function () {
+    inDataTable();
+  });
+
+
+
+
+</script>
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/form.js') }}"></script>
+
+<script src="https://code.jquery.com/jquery-1.12.2.min.js"
+  integrity="sha256-lZFHibXzMHo3GGeehn1hudTAP3Sc0uKXBXAzHX1sjtk=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/moment.min.js') }}"></script>
+{% if get_locale() != 'en' %}
+<script type="text/javascript"
+  src="{{ url_for(__name__ ~ ':statics', path='i18n/momentjs/' ~ get_locale() ~ '.js') }}"></script>
+{% endif %}
+{% if 'pdf' in model.export_types %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/pdfmake.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/vfs_fonts.js') }}"></script>
+{% endif %}
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/jquery.mask.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.checkboxes.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/CellEdit.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/toastr.min.js') }}"></script>
+<!-- <script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dataTables.fixedHeader.js') }}"></script> -->
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+
+
+<script type="text/javascript"
+  src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.searchHighlight.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/utils.js') }}"></script>
+<script>var model = {{ __js_model__ | tojson | safe}};</script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/common/common.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/common/common_service.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/render_new_quotation.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/quotation_service.js') }}"></script>
+
+{% if custom_render_js(request) %}
+<script type="text/javascript" src="{{ custom_render_js(request) }}"></script>
+{% endif %}
+{% for link in model._additional_js_links(request, "LIST" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/render_new_list.js') }}"></script>
+
+
+
+{% endblock %}

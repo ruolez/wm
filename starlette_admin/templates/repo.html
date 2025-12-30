@@ -1,0 +1,426 @@
+﻿{% extends "layout.html" %}
+{% block header %}
+
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td,
+    th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+
+    .dataTables_filter{
+        margin-top: 10px !important;
+    }
+
+</style>
+
+<div class="d-flex justify-content-between align-items-center">
+    <h1>{{ model.label }}</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':index') }}">{{ _("Admin") }}</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':list', identity=model.identity) }}">{{ model.label }}</a>
+        </li>
+        <li class="breadcrumb-item active">{{ _("Create") }}</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <form action="{{ request.url | safe }}" method="POST" enctype="multipart/form-data">
+                    <div class="card-header">
+                        <div class="container-fluid">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <h3 class="card-title">{{ _("New %(name)s", name=model.name ) }}</h3>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-body border-bottom py-3">
+                        {% block create_form %}
+
+                        {%if update %}
+                        <h3 class="card-title" style="color: green;">{{update}}</h3>
+                        {% endif %}
+
+                        {%if update_error %}
+                        <h3 class="card-title" style="color: red;">{{update_error}}</h3>
+                        {% endif %}
+
+                        {%if update_error_list %}
+                        {% for er in update_error_list %}
+                        <h3 class="card-title" style="color: red;">{{er}}</h3>
+                        {% endfor %}
+                        {% endif %}
+
+
+                        <br>
+                        <br>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        {% for field in model.get_fields_list(request, 'CREATE' | ra) %}
+
+                        {% if field.identity2 == "datefrom" %}
+                        <div class="col-5" id="datefrom">
+                            <div class="mb-4">
+                                {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                error=errors.get(field.name, None) if errors else None %}
+                                {% include field.label_template %}
+                                {% include field.form_template %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if field.identity2 == "dateto" %}
+                        <div class="col-5" id="dateto">
+                            <div class="mb-4">
+                                {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                error=errors.get(field.name, None) if errors else None %}
+                                {% include field.label_template %}
+                                {% include field.form_template %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+
+                        {% if field.identity2 == "productdescriptionmanual" %}
+                        <div class="col-5" id="productdescriptionmanual">
+                            <div class="mb-4">
+                                {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                error=errors.get(field.name, None) if errors else None %}
+                                {% include field.label_template %}
+                                {% include field.form_template %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if field.identity2 == "productskumanual" %}
+                        <div class="col-5" id="productskumanual">
+                            <div class="mb-4">
+                                {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                error=errors.get(field.name, None) if errors else None %}
+                                {% include field.label_template %}
+                                {% include field.form_template %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if field.identity2 == "productupcmanual" %}
+                        <div class="col-5" id="productupcmanual">
+                            <div class="mb-4">
+                                {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                error=errors.get(field.name, None) if errors else None %}
+                                {% include field.label_template %}
+                                {% include field.form_template %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+
+
+                        {% if obj["ProductDescription"] != None and obj["SKU"] != None and obj["ProductUPC"] !=
+                        None%}
+
+                        {% if field.identity2 == "qtymanual" %}
+                        <div class="col-2">
+                            <div class="mb-4">
+                                {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                error=errors.get(field.name, None) if errors else None %}
+                                {% include field.label_template %}
+                                <br>
+                                {{obj["Qty"]}}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if field.identity2 == "newqtymanual" %}
+                        <div class="col-2">
+                            <div class="mb-4">
+                                {% with action=('CREATE'| ra), data=(None if not obj else obj[field.name]),
+                                error=errors.get(field.name, None) if errors else None %}
+                                {% include field.label_template %}
+                                {% include field.form_template %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endif %}
+
+                        {% endfor %}
+                    </div>
+
+                    <button type="submit" name="_cr_rep" id="name=" _cr_rep"" class="btn btn-success">{{ _("Generate
+                        Roport")
+                        }}</button>
+
+
+                    {% endblock %}
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+<div class="container-fluid px-2 mt-2">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+
+                <table id="dt" class="table table-vcenter text-nowrap" style="font-size: 12px; margin-top: 10px; !important" style="overflow-y: scroll;">
+                    <thead>
+                        <tr id="table-m" style="overflow-y: scroll;">
+
+                        </tr>
+
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+{% block head_css %}
+{{ super() }}
+{% for link in model._additional_css_links(request, "CREATE" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+<style>
+    .is-invalid .select2-selection {
+        border-color: #d63939 !important;
+    }
+</style>
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.checkboxes.css') }}" />
+{% for link in model._additional_css_links(request, "LIST" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+<style>
+    div.dataTables_wrapper div.dataTables_info {
+        padding-top: 0;
+    }
+
+    table.dataTable span.highlight {
+        background-color: #ffff88;
+        border-radius: 0.28571429rem;
+    }
+
+    table.dataTable span.column_highlight {
+        background-color: #ffcc99;
+        border-radius: 0.28571429rem;
+    }
+
+    table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
+    table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+        background-color: #206bc4;
+    }
+
+    table.dataTable {
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
+
+
+    /* Hide the Copy button */
+.btn.btn-secondary.buttons-copy {
+    display: none !important;
+}
+
+/* Hide the CSV button */
+.btn.btn-secondary.buttons-csv {
+    display: none !important;
+}
+
+.btn.btn-secondary.buttons-excel{
+    display: none !important;
+}
+
+.buttons-print {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+
+
+</style>
+
+
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+{% for link in model._additional_js_links(request, "CREATE" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<script>
+    function myFunction() {
+        alert("I am an alert box!");
+    }
+</script>
+
+
+
+
+<!-- <script type="text/javascript" src="https://cdn.datatables.net/buttons/3.1.1/js/dataTables.buttons.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.2/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script> -->
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dataTables.buttons.js') }}"></script>>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/jszip.min.js') }}"></script>>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/buttons.html5.min.js') }}"></script>>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/buttons.print.min.js') }}"></script>>
+
+
+
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/form_manualupdate.js') }}"></script>
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/moment.min.js') }}"></script>
+{% if get_locale() != 'en' %}
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='i18n/momentjs/' ~ get_locale() ~ '.js') }}"></script>
+{% endif %}
+{% if 'pdf' in model.export_types %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/pdfmake.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/vfs_fonts.js') }}"></script>
+{% endif %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.checkboxes.js') }}"></script>
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.searchHighlight.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/utils.js') }}"></script>
+<script>var model = {{ __js_model__ | tojson | safe}};</script>
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='js/render_manualupdate_quotation.js') }}"></script>
+{% if custom_render_js(request) %}
+<script type="text/javascript" src="{{ custom_render_js(request) }}"></script>
+{% endif %}
+{% for link in model._additional_js_links(request, "LIST" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+<script type="text/javascript"
+    src="{{ url_for(__name__ ~ ':statics', path='js/render_manualupdate_list.js') }}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#orderslock').focus();
+    });
+</script>
+
+
+<script>
+
+
+
+
+
+
+var obj = {{ data_table | tojson | safe }};
+
+function generateTableHeaders(obj){
+    $(document).ready(function() {
+        // Extract the keys from the first object to create column headers
+        var columns = Object.keys(obj[0]);
+
+        // Create column headers dynamically
+        columns.forEach(function(column) {
+            $("#table-m").append(`<th><strong>${column}</strong></th>`);
+        });
+
+        // Initialize DataTable
+
+    });
+}
+
+function initializeDataTable(obj) {
+    $(document).ready(function() {
+
+        // Check if obj is not null or undefined and has data
+        if (obj && obj.length > 0) {
+            $('#dt').DataTable({
+                dom: 'Bfrt<"card-footer d-flex align-items-center justify-content-between custom-footer"lp><"info">i',
+
+     paging: true,
+     lengthChange: true,
+     searching: true,
+     info: true,
+     colReorder: true,
+     searchHighlight: true,
+     scrollY: true,
+     scrollX: true,
+     scrollCollapse: true,
+     select:true,
+
+     searchBuilder: {
+       delete: `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>`,
+       left: `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="15 6 9 12 15 18"></polyline></svg>`,
+       right: `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="9 6 15 12 9 18"></polyline></svg>`,
+     },
+
+                data: obj,
+                columns: Object.keys(obj[0]).map(function(key) {
+                    return { title: `<strong>${key}</strong>`, data: key };
+                })
+            });
+        } else {
+            console.error('Data object is empty or undefined');
+        }
+    });
+}
+// Check if obj is not null or undefined and has data
+function generateData(obj){
+    return obj;
+}
+
+if (obj && Array.isArray(obj) && obj.length > 0) {
+    generateTableHeaders(obj);
+    initializeDataTable(obj);
+} else {
+    console.log('No data available for the DataTable');
+}
+
+
+
+// $('aside .nav-link.dropdown-toggle .nav-link-title').first().prop('baseURI').split('?')[0]
+
+</script>
+{% endblock %}

@@ -1,0 +1,354 @@
+
+var dt_columns = [];
+
+  function initializeColumns() {
+    let fringe = structuredClone(model.fields);
+    let dt_columns = []; 
+    let dt_fields= []; 
+    $("#table-header").empty();
+    while (fringe.length > 0) {
+
+      let field = fringe.shift(0);
+
+      if (field.type === "CollectionField")
+        fringe = field.fields
+          .map((f) => {
+            f.name = field.name + "." + f.name;
+            f.label = field.label + "." + f.label;
+            return f;
+          })
+          .concat(fringe);
+
+      else if (field.type === "EnumField1") {
+      }
+
+      else if (field.type === "IntegerField1") {
+      }
+      else if (field.type === "FloatField1") {
+      }
+      if (field.identity6) {
+      }
+
+
+      else if (field.type === "ListField") {
+        if (field.field.type == "CollectionField") {
+          $("#table-header").append(`<th>${field.label}</th>`);
+          dt_columns_updated.push({
+            name: field.name,
+            data: field.name,
+            orderable: field.field.orderable,
+            searchBuilderType: field.search_builder_type,
+            render: function (data, type, full, meta) {
+              return render[field.field.render_function_key](
+                data,
+                type,
+                full,
+                meta,
+                field
+              );
+            },
+          });
+        } else {
+          field.field.name = field.name;
+          field.field.label = field.label;
+          fringe.unshift(field.field);
+        }
+      } else if (!field.exclude_from_list) {
+        $("#table-header").append(`<th>${field.label}</th>`);
+        dt_columns.push({
+          name: field.name,
+          data: field.name,
+          orderable: field.orderable,
+          searchBuilderType: field.search_builder_type,
+          render: function (data, type, full, meta) {
+            return render[field.render_function_key](
+              data,
+              type,
+              full,
+              meta,
+              field
+            );
+          },
+        });
+        dt_fields.push(field);
+      }
+    }
+    return { dt_columns: dt_columns, dt_fields: dt_fields };
+  };
+
+
+  //for what we need it?
+  function initializeButtons (){
+    $("#table-header").append(`<th></th>`);
+
+  buttons = [];
+  export_buttons = [];
+  if (model.exportTypes.includes("csv"))
+    export_buttons.push({
+      extend: "csv",
+      text: function (dt) {
+        return `<i class="fa-solid fa-file-csv"></i> ${dt.i18n("buttons.csv")}`;
+      },
+      exportOptions: {
+        columns: model.exportColumns,
+        orthogonal: "export-csv",
+      },
+    });
+  if (model.exportTypes.includes("excel"))
+    export_buttons.push({
+      extend: "excel",
+      text: function (dt) {
+        return `<i class="fa-solid fa-file-excel"></i> ${dt.i18n(
+          "buttons.excel"
+        )}`;
+      },
+      exportOptions: {
+        columns: model.exportColumns,
+        orthogonal: "export-excel",
+      },
+    });
+  if (model.exportTypes.includes("pdf"))
+    export_buttons.push({
+      extend: "pdf",
+      text: function (dt) {
+        return `<i class="fa-solid fa-file-pdf"></i> ${dt.i18n("buttons.pdf")}`;
+      },
+      exportOptions: {
+        columns: model.exportColumns,
+        orthogonal: "export-pdf",
+      },
+    });
+  if (model.exportTypes.includes("print"))
+    export_buttons.push({
+      extend: "print",
+      text: function (dt) {
+        return `<i class="fa-solid fa-print"></i> ${dt.i18n("buttons.print")}`;
+      },
+      exportOptions: {
+        columns: model.exportColumns,
+        orthogonal: "export-print",
+      },
+    });
+  if (export_buttons.length > 0)
+    buttons.push({
+      extend: "collection",
+      text: function (dt) {
+        return `<i class="fa-solid fa-file-export"></i> ${dt.i18n(
+          "admin.buttons.export"
+        )}`;
+      },
+      className: "",
+      buttons: export_buttons,
+    });
+  noInputCondition = function (cn) {
+    return {
+      conditionName: function (t, i) {
+        return t.i18n(cn);
+      },
+      init: function (a) {
+        a.s.dt.one("draw.dtsb", function () {
+          a.s.topGroup.trigger("dtsb-redrawLogic");
+        });
+      },
+      inputValue: function () {},
+      isInputValid: function () {
+        return !0;
+      },
+    };
+  };
+  if (model.columnVisibility)
+    buttons.push({
+      extend: "colvis",
+      text: function (dt) {
+        return `<i class="fa-solid fa-eye"></i> ${dt.i18n("buttons.colvis")}`;
+      },
+    });
+  }
+
+  function extractCriteria(c) {
+    var d = {};
+    if ((c.logic && c.logic == "OR") || c.logic == "AND") {
+      d[c.logic.toLowerCase()] = [];
+      c.criteria.forEach((v) => {
+        d[c.logic.toLowerCase()].push(extractCriteria(v));
+      });
+    } else {
+      if (c.type.startsWith("moment-")) {
+        searchFormat = dt_fields.find(
+          (f) => f.name == c.origData
+        )?.search_format;
+        if (!searchFormat) searchFormat = moment.defaultFormat;
+        c.value = [];
+        if (c.value1) {
+          c.value1 = moment(c.value1).format(searchFormat);
+          c.value.push(c.value1);
+        }
+        if (c.value2) {
+          c.value2 = moment(c.value2).format(searchFormat);
+          c.value.push(c.value2);
+        }
+      } else if (c.type == "num") {
+        c.value = [];
+        if (c.value1) {
+          c.value1 = Number(c.value1);
+          c.value.push(c.value1);
+        }
+        if (c.value2) {
+          c.value2 = Number(c.value2);
+          c.value.push(c.value2);
+        }
+      }
+      cnd = {};
+      c_map = {
+        "=": "eq",
+        "!=": "neq",
+        ">": "gt",
+        ">=": "ge",
+        "<": "lt",
+        "<=": "le",
+        contains: "contains",
+        starts: "startswith",
+        ends: "endswith",
+        "!contains": "not_contains",
+        "!starts": "not_startswith",
+        "!ends": "not_endswith",
+        null: "is_null",
+        "!null": "is_not_null",
+        false: "is_false",
+        true: "is_true",
+      };
+      if (c.condition == "between") {
+        cnd["between"] = c.value;
+      } else if (c.condition == "!between") {
+        cnd["not_between"] = c.value;
+      } else if (c_map[c.condition]) {
+        cnd[c_map[c.condition]] = c.value1 || "";
+      }
+      d[c.origData] = cnd;
+    }
+    return d;
+  }
+
+function initializeDataTable(dt_columns){
+   
+  initializeButtons ();
+
+    if ( $.fn.dataTable.isDataTable( '#example' ) ) {
+        table = $('#example').DataTable();
+    }
+    else {
+        table = $('#example').DataTable( {
+            paging: false
+        } );
+    }
+    table.destroy();
+
+
+    new DataTable('#example', {
+      dom: '<"newQutation-button"> <"top"f<"clear">>rt<"card-footer d-flex align-items-center justify-content-between custom-footer"lp> <"info">i ',      
+     
+       paging: true,
+       lengthChange: true,
+       searching: true,
+       info: true,
+       colReorder: true,
+       searchHighlight: true,
+      // autoWidth: false,
+      // border: true,
+      
+      select:true,
+       searchBuilder: {
+         delete: `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>`,
+         left: `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="15 6 9 12 15 18"></polyline></svg>`,
+         right: `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="9 6 15 12 9 18"></polyline></svg>`,
+       },
+      
+      
+     
+        ajax: function (data, callback, settings) {
+            order = [];
+  
+      
+            query = {
+              skip: settings._iDisplayStart,
+              order_by: order,
+              dop: model.dop
+            };
+            $.ajax({
+              url: model.apiUrl,
+              type: "get",
+              data: query,
+              traditional: true,
+              dataType: "json",
+              success: function (data, status, xhr) {
+                data = data.items;
+                data.forEach((d) => {
+                  d.DT_RowId = d[model.pk];
+                });
+                callback({
+                  data: data,
+                });
+              },
+            });
+          },
+        columns: [
+            ...dt_columns,
+            {
+              data: "DT_RowId",
+              orderable: true,
+              render: render.col_1,
+            }
+        ],
+
+        // initComplete: function () {
+        //   new $.fn.dataTable.Buttons(table, {
+        //     name: "main",
+        //     buttons: buttons,
+        //     dom: {
+        //       button: {
+        //         className: "btn btn-secondary",
+        //       },
+        //     },
+        //   });
+        //   new $.fn.dataTable.Buttons(table, {
+        //     name: "pageLength",
+        //     buttons: [
+        //       {
+        //         extend: "pageLength",
+        //         className: "btn",
+        //       },
+        //     ],
+        //     dom: {
+        //       button: {
+        //         className: "",
+        //       },
+        //     },
+        //   });
+    
+        //   table.buttons("main", null).container().appendTo("#btn_container");
+        //   table
+        //     .buttons("pageLength", null)
+        //     .container()
+        //     .appendTo("#pageLength_container");
+        // },
+        order: [
+          [1, 'desc'] 
+        ],
+      select: true
+
+
+    });
+
+    $('.newQutation-button').html(`<a href="${newUrl}" class="btn btn-primary">New Quotation</a>`);
+    //using session storage for select box 'chouse db'
+    $('.newQutation-button').on('click', function() {
+      sessionStorage.setItem('modelDop', model.dop);   
+      window.location.href = newUrl;
+  });
+
+}
+
+
+
+
+

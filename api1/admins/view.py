@@ -1,0 +1,69 @@
+﻿from typing import Any, List, Dict
+
+from sqlalchemy.orm import Session
+from starlette_admin import action
+from datetime import date, timedelta
+
+from sqlalchemy.exc import IntegrityError
+from starlette.requests import Request
+from starlette_admin import EnumField, ExportType, StringField
+from starlette_admin.contrib.sqla import ModelView
+from starlette_admin.exceptions import FormValidationError
+
+
+from .model import Article, Status, AdminUserProject
+
+AVAILABLE_USER_TYPES = [
+    ("admin", "Admin"),
+    ("content-writer", "Content writer"),
+    ("editor", "Editor"),
+    ("regular-user", "Regular user"),
+]
+class AdminDBsView(ModelView):
+    fields = [StringField("TypeDB", label="TypeDB", help_text="Add unique tag name")]
+class AdminUserProjectView(ModelView):
+    fields = [
+        "avatar",
+        "username",
+        "full_name",
+        "password",
+        EnumField("statususer", choices=AVAILABLE_USER_TYPES, select2=False),
+        "activated",
+        "email",
+    ]
+    fields_default_sort = [AdminUserProject.username, ("username", True)]
+
+
+class ArticleView(ModelView):
+
+    def can_view_details(self, request: Request) -> bool:
+        return "read" in request.state.user["roles"]
+
+    def can_create(self, request: Request) -> bool:
+        return "create" in request.state.user["roles"]
+
+    def can_edit(self, request: Request) -> bool:
+        return "edit" in request.state.user["roles"]
+
+    def can_delete(self, request: Request) -> bool:
+        return "delete" in request.state.user["roles"]
+
+    async def is_action_allowed(self, request: Request, name: str) -> bool:
+        if name == "make_published":
+            return "action_make_published" in request.state.user["roles"]
+        return await super().is_action_allowed(request, name)
+
+    @action(
+        name="make_published",
+        text="Mark selected articles as published",
+        confirmation="Are you sure you want to mark selected articles as published ?",
+        submit_btn_text="Yes, proceed",
+        submit_btn_class="btn-success",
+    )
+    async def make_published_action(self, request: Request, pks: List[Any]) -> str:
+        session: Session = request.state.session
+        for article in await self.find_by_pks(request, pks):
+            article.status = Status.Published
+            session.add(article)
+        session.commit()
+        return f"{len(pks)} articles were successfully marked as published"

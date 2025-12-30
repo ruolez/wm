@@ -1,0 +1,5 @@
+﻿FROM nginx:latest
+RUN rm /etc/nginx/conf.d/default.conf
+RUN mkdir -p /etc/nginx/live/
+RUN chmod 600 -R /etc/nginx/live/
+COPY nginx.conf /etc/nginx/conf.d/default.conf

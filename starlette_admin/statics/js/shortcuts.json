@@ -1,0 +1,5 @@
+[
+    { "shortcut": "Ctrl + S", "text": "Save and Close Quotation" },
+    { "shortcut": "Ctrl + P", "text": "Save and Print Quotation" },
+    { "shortcut": "Ctrl/Alt + K", "text": "Inside in 'Browse items' move and to the main table and close 'Browse items'" }
+]

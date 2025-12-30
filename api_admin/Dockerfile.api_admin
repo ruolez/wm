@@ -1,0 +1,20 @@
+﻿# Use base image
+FROM base as api_admin
+
+# Set the working directory
+WORKDIR /api_admin
+
+# Copy the project files
+COPY ./ .
+
+# Install poetry and dependencies
+RUN pip3 install --upgrade pip && \
+    pip3 install poetry && \
+    poetry install --no-root && \
+    poetry update package
+
+# Expose the port for the API server
+EXPOSE 5000
+
+# Run the API server with uvicorn
+CMD ["poetry", "run", "uvicorn", "app_admin:app", "--host", "0.0.0.0", "--port", "5000", "--reload"]

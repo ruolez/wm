@@ -1,0 +1,569 @@
+{% extends "layout.html" %}
+{% include "print.html" %}
+{% include "forms/_remove.html" %}
+{% include "forms/_convert.html" %}
+{% block header %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center">
+    <h1 id="labelH1">INVOICE DETAILS</h1>
+    <div class="d-flex justify-content-between">
+      <div class="btn-list" id="actionButtons">              
+        <button type="button" class="btn btn-primary" id="submitButton" onclick="PrintInvoice()">Print PDF</button>
+        <button type="button" class="btn btn-primary" id="sendEmailButton" onclick="SendEmail()">Send Email</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="emailForm" novalidate>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="emailModalLabel">Send Invoice</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="emailInput" class="form-label">Recipient Email</label>
+            <input type="email"
+                   class="form-control"
+                   id="emailInput"
+                   placeholder="name@example.com"
+                   required>
+            <div class="invalid-feedback">
+              Please enter a valid email address.
+            </div>
+            <div class="mb-3">
+              <label for="bodyInput" class="form-label">Email Body</label>
+              <textarea class="form-control"
+                        id="bodyInput"
+                        name="body"
+                        rows="6"
+                        required>{{ 
+                  "Hello " ~ current_user.name ~ ",\n\n" ~
+                  "Please find attached your invoice #" ~ invoice_number ~
+                  " dated " ~ invoice_date_str ~ ".\n\n" ~
+                  "Thank you for your business.\n"
+                }}</textarea>
+              <div class="invalid-feedback">
+                Please enter the email body.
+              </div>
+       </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button type="submit"
+                  class="btn btn-primary">
+            Send
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <form id="quotationForm">
+        <div>
+          <div class="card shadow disabled" style="height: auto;" id="mainqtn" tabindex="-1">
+            <div class="card-header" tabindex="-1">
+              <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" tabindex="-1">
+                <li class="nav-item" tabindex="-1">
+                  <a href="#tabs-home-ex2" class="nav-link active" data-bs-toggle="tab" id="generaltab">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="icon icon-tabler icons-tabler-outline icon-tabler-file">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                    </svg>
+                    General</a>
+                </li>
+                <li class="nav-item ms-auto">
+                  <button type="button" class="nav-link" id="CloseButton" onclick="CloseInvoice()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="m-0 icon icon-tabler icons-tabler-outline icon-tabler-x">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                      <path d="M18 6l-12 12" />
+                      <path d="M6 6l12 12" />
+                    </svg>
+                  </button>
+                </li>              
+              </ul>
+            </div>
+
+            <div class="card-body">
+              <div class="row row-deck row-cards custom-row-flex mb-4">
+                <div class="col-md-6 col-lg-8">
+                  <div class="card card-no-border-top shadow">
+                    <div class="hr-text">
+                      <h4><span>Invoice</span></h4>
+                    </div>
+                    <div class="card-body" style="height: 10rem">
+                      <label class="form-label">
+                        <strong style="font-size: 1.15rem;">Invoice Number</strong><br>
+                        <span id="invoice-number" style="font-size: 0.85rem;">-</span>
+                      </label>
+                      <br>
+                      <label class="form-label">
+                        <strong style="font-size: 1.15rem;">Date</strong><br>
+                        <span id="invoice-date" style="font-size: 0.85rem;">-</span>
+                      </label>
+                      <br>
+                      <label class="form-label">
+                        <strong style="font-size: 1.15rem;">Notes</strong><br>
+                        <span id="notes" style="font-size: 0.85rem;">-</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                  <div class="card card-no-border-top shadow">
+                    <div class="hr-text">
+                      <h4><span>Customer</span></h4>
+                    </div>
+                    <div class="card-body" style="height: 14rem">
+                      <label class="form-label">
+                        <strong style="font-size: 1.15rem;">Business Name</strong><br>
+                        <span id="business-name" style="font-size: 0.85rem;">-</span>
+                      </label>
+                      <br>
+                      <label class="form-label">
+                        <strong style="font-size: 1.15rem;">Account Number</strong><br>
+                        <span id="account-number" style="font-size: 0.85rem;">-</span>
+                      </label>
+                      <br>
+                      <label class="form-label">
+                        <strong style="font-size: 1.15rem;">Sales Rep</strong><br>
+                        <span id="sales-rep" style="font-size: 0.85rem;">-</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab-content m-0">
+                <div class="tab-pane active show" id="tabs-home-ex2">
+                  <div class="card shadow">
+                    <div style="height: 500px; overflow: scroll;">
+                      <table id="items-table"
+                        class="table table-vcenter text-nowrap table-hover cell-border table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Quantity shipped</th>
+                            <th>Product Description</th>
+                            <th>UnitPrice</th>
+                            <th>UnitCost</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+
+                    <br>
+                    <div>    
+                      <br>
+                      <div>
+                        <div class="d-flex flex-column align-items-end p-3 ">
+                          <div class="me-3" id="totalitems">
+                            Total items: <strong>0</strong>
+                          </div>
+                          <div class="me-3" id="totalqty">
+                            Total Quantity: <strong>0</strong>
+                          </div>
+                          <div class="me-3" id="totalcost">
+                            Total Cost: <strong>0</strong>
+                          </div>
+                          <div class="me-3" id="totalprice">
+                            Total Price: <strong>0</strong>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div> 
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Print PDF modal window -->
+        <div class="modal modal-blur fade" id="printModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" >
+          <div class="modal-dialog modal-dialog-centered modal-dialog-full" role="document">
+            <div class="modal-content" style=" height: 97%;">
+              <div class="modal-header">
+                <h5 class="modal-title">Print</h5>
+                <button id="closePrint" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div style="height: 71vh; overflow-y: scroll;">
+                    <div id="pdfFile">
+                        <embed id="pdfViewer" width="800" height="600" style ='width: 100%;'></embed>
+                    </div>
+                </div>
+              </div>     
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal modal-blur fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" >
+  <div class="modal-dialog modal-dialog-centered modal-dialog-full" role="document">
+    <div class="modal-content" style=" height: 97%;">
+      <div class="modal-header">
+        <h5 class="modal-title">Browse items</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div style="height: 71vh; overflow-y: scroll;">
+          <table id="brouse-items-table" class="table table-vcenter text-nowrap table-hover cell-border table-bordered">            
+            <thead>
+              <th class="selected-column" style="width:5%">S</th>
+              <th class="qty-column td-wrapper" style="width:5%">Qty</th>
+              <th class="product-description-column" style="width:10%">Product Description</th>
+              <th class="unit-price-column" style="width:5%">UnitPrice</th>
+              <th class="unit-cost-column" style="width:5%">UnitCost</th>
+              <th class="sku-column" style="width:10%">SKU</th>
+              <th class="upc-column" style="width:10%">UPC</th>
+              <th class="stock-column" style="width:10%">Stock</th>
+              <th class="total-column">Total</th>
+              <th class="total-cost-column display-none" >TotalCost</th>
+              <th class="comment-column display-none" >Comment</th>
+            </thead>
+          </table>
+        </div>
+        <br>
+
+
+
+
+      </div>
+      <div class="modal-footer d-flex justify-content-between">
+        <div class="col-8 d-flex align-items-start justify-content-sm-start">
+          <div class="col-3 d-flex align-items-center justify-content-between">
+            <label for="lookin" class="form-label m-0 mx-lg-2"> <strong> Look in: </strong> </label>
+            <div class="dropdown">
+              <button class="btn dropdown-toggle lookinDropdown drowpdownlayout" type="button" id="lookinDropdown"
+                data-bs-toggle="dropdown" aria-expanded="false" data-value="1" tabindex="-1" >
+                SKU
+              </button>
+              <ul class="dropdown-menu scrollable-menu" aria-labelledby="lookinDropdown">
+                <li><a class="dropdown-item" data-value="1">SKU</a></li>
+                <li><a class="dropdown-item" data-value="2">UPC</a></li>
+                <li><a class="dropdown-item" data-value="3">Decription</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-9 d-flex align-items-center justify-content-between">
+            <label for="modalsearch" class="form-label m-0 mx-lg-2 col-1-1"> <strong> for value: </strong> </label>
+            <input type="text" class="form-control col-10" id="modalsearch" name="modalsearch" placeholder="Search…">
+          </div>
+        </div>
+        <div class="col-2 d-flex align-items-start justify-content-sm-start">
+          <button class="btn btn-primary" id="addItemButton" tabindex="-1">Add Items</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="hidden" name="QuotationID" id="QuotationID">
+<input type="hidden" name="InvoiceID" id="InvoiceID">
+
+{% endblock %}
+
+
+<!-- css block -->
+{% block head_css %}
+{{ super() }}
+
+
+{% for link in model._additional_css_links(request, "CREATE" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+
+
+<style>
+  .is-invalid .select2-selection {
+    border-color: #d63939 !important;
+  }
+
+  .custom-card-header {
+    padding-top: 5%;
+    padding-bottom: 5%;
+  }
+</style>
+
+
+
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/dt.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for(__name__ ~ ':statics', path='css/toastr.min.css') }}" />
+
+
+
+{% for link in model._additional_css_links(request, "LIST" | ra) %}
+<link rel="stylesheet" href="{{ link }}">
+{% endfor %}
+<style>
+
+td{
+  padding-top: 0.1875rem !important;
+  padding-bottom: 0.1875rem !important;
+}
+
+.dropdown-menu.scrollable-menu {
+  max-height: 208px; 
+  overflow-y: scroll; 
+}
+
+
+.dropdown-menu.scrollable-menu:not(.show) {
+  display: none;
+}
+  #items-table td {
+    font-size: 0.9rem;
+    font-weight: normal;
+    text-align: left;
+  }
+  div.dataTables_wrapper div.dataTables_info {
+    padding-top: 0;
+  }
+
+  table.dataTable span.highlight {
+    background-color: #ffff88;
+    border-radius: 0.28571429rem;
+  }
+
+  table.dataTable span.column_highlight {
+    background-color: #ffcc99;
+    border-radius: 0.28571429rem;
+  }
+
+  table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
+  table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+    background-color: #206bc4;
+  }
+
+  table.dataTable {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+  }
+
+  .custom-row-flex {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .total-column {
+    font-weight: bold;
+  }
+
+  .lookinDropdown {
+    width: 116px;
+  }
+
+  .dbDropdown {
+    width: 200px !important;
+  }
+
+  .drowpdownlayout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .td-wrapper {
+    padding: 0 !important;
+    text-align: center !important;
+  }
+
+  .form-control-table {
+    width: 5.753125rem;
+    border: none !important;
+    border-radius: 0 !important;
+    font-size: inherit !important;
+    padding: 0 0 0 .4375rem !important;
+    height: 2.25rem !important;
+    text-align: center !important;
+  }
+
+  .drop-second-page {
+    width: 9.5625rem !important;
+  }
+
+  .small-margin-buttom {
+    margin-bottom: 0.1875rem;
+  }
+
+  .unsetbackground {
+    color: unset !important;
+    background-color: inherit;
+  }
+
+  .unsetbackground:focus {
+    background-color: unset;
+  }
+
+  .advselect {
+    position: relative;
+    display: inline-block;
+  }
+
+  .selectopened {}
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  .arrow {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+  }
+
+  .arrow:after {
+    content: "";
+    display: inline-block;
+    vertical-align: 0.306em;
+    width: 0.36em;
+    height: 0.36em;
+    border-bottom: 1px var(--tblr-border-style);
+    border-left: 1px var(--tblr-border-style);
+    margin-right: 0.1em;
+    margin-left: 0.4em;
+    transform: rotate(-45deg);
+  }
+
+  .width100 {
+    width: 100% !important;
+  }
+
+  .display-none{
+    display: none;
+  }
+  .invalid-input {
+    border: 0.5px solid red;
+  }
+
+  .form-group {
+    margin-right: 15px;
+}
+
+.form-group input {
+    margin-right: 5px;
+}
+
+.form-check-inline {
+    margin-bottom: 0 !important;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.btn:hover {
+  /* border: red 1px solid; */
+
+}
+.btn:hover .icon-tabler-trash {
+  /* stroke: red; */
+  animation: shake-keyframes 1.8s ease-in-out infinite;
+}
+
+@keyframes shake-keyframes {
+  0% {
+        transform: scaleX(1)
+    }
+
+    10%,5% {
+        transform: scale3d(.9,.9,.9) rotate(-5deg)
+    }
+
+    15%,25%,35%,45% {
+        transform: scale3d(1.1,1.1,1.1) rotate(5deg)
+    }
+
+    20%,30%,40% {
+        transform: scale3d(1.1,1.1,1.1) rotate(-5deg)
+    }
+
+    50% {
+        transform: scaleX(1)
+    }
+}
+
+
+</style>
+
+
+{% endblock %}
+
+
+{% block script %}
+{{ super() }}
+{% for link in model._additional_js_links(request, "CREATE" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/form.js') }}"></script>
+<script src="https://code.jquery.com/jquery-1.12.2.min.js"
+  integrity="sha256-lZFHibXzMHo3GGeehn1hudTAP3Sc0uKXBXAzHX1sjtk=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/moment.min.js') }}"></script>
+{% if get_locale() != 'en' %}
+<script type="text/javascript"
+  src="{{ url_for(__name__ ~ ':statics', path='i18n/momentjs/' ~ get_locale() ~ '.js') }}"></script>
+{% endif %}
+{% if 'pdf' in model.export_types %}
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/pdfmake.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/vfs_fonts.js') }}"></script>
+{% endif %}
+
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.checkboxes.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/CellEdit.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/vendor/toastr.min.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+<script type="text/javascript"
+  src="{{ url_for(__name__ ~ ':statics', path='js/vendor/dt.searchHighlight.js') }}"></script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/utils.js') }}"></script>
+<script>var model = {{ __js_model__ | tojson | safe}};</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Flag for avoiding unused requests. -->
+<script>
+  window.isInvoiceDetailPage = true;
+</script>
+<script type="text/javascript" src="{{ url_for(__name__ ~ ':statics', path='js/invoice_service.js') }}"></script>
+{% if custom_render_js(request) %}
+<script type="text/javascript" src="{{ custom_render_js(request) }}"></script>
+{% endif %}
+{% for link in model._additional_js_links(request, "LIST" | ra) %}
+<script type="text/javascript" src="{{ link }}"></script>
+{% endfor %}
+{% endblock %}

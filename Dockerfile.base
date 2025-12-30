@@ -1,0 +1,49 @@
+# Base image with common dependencies
+FROM python:3.9.18-slim-bullseye
+
+# Avoid writing .pyc files and set unbuffered output for logs
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Install common dependencies and Microsoft SQL ODBC driver
+RUN apt-get update && apt-get install -y \
+    curl \
+    mc \
+    nano \
+    inetutils-ping \
+    traceroute \
+    unixodbc \
+    unixodbc-dev \
+    freetds-dev \
+    freetds-bin \
+    tdsodbc \
+    build-essential \
+    libltdl7 \
+    libodbc1 \
+    odbcinst \
+    odbcinst1debian2 \
+    locales-all \
+    apt-transport-https \
+    gnupg2 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Add Microsoft SQL Server repository
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+    apt-get update
+
+# Install MS ODBC and tools
+RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools
+
+# Set PATH for mssql-tools
+ENV PATH="/opt/mssql-tools/bin:${PATH}"
+
+# Add ODBC driver configuration
+RUN echo "[ODBC Driver 17 for SQL Server]\n\
+  Description=Microsoft ODBC Driver 17 for SQL Server\n\
+  Driver=/opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.5.so.2.1\n\
+  UsageCount=1" >> /etc/odbcinst.ini
+
+# Set SSL configuration for compatibility
+RUN sed -i 's,^\(MinProtocol[ ]*=\).*,\1'TLSv1.0',g' /etc/ssl/openssl.cnf && \
+    sed -i 's,^\(CipherString[ ]*=\).*,\1'DEFAULT@SECLEVEL=0',g' /etc/ssl/openssl.cnf

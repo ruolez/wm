@@ -17,7 +17,8 @@
 # Options:
 #   --ip <address>    Specify IP address instead of auto-detect
 #   --uninstall       Remove all containers and data
-#   --update          Update existing installation
+#   --update          Rebuild and restart with local files
+#   --update-github   Pull latest from GitHub, rebuild and restart
 #   --help            Show this help message
 #
 # =============================================================================
@@ -77,13 +78,15 @@ show_help() {
     echo "Options:"
     echo "  --ip <address>    Specify IP address instead of auto-detect"
     echo "  --uninstall       Remove all containers and data"
-    echo "  --update          Update existing installation"
+    echo "  --update          Rebuild and restart with local files"
+    echo "  --update-github   Pull latest from GitHub, rebuild and restart"
     echo "  --help            Show this help message"
     echo ""
     echo "Examples:"
     echo "  sudo $0                     # Fresh install with auto-detected IP"
     echo "  sudo $0 --ip 192.168.1.100  # Install with specific IP"
-    echo "  sudo $0 --update            # Update existing installation"
+    echo "  sudo $0 --update            # Update with local changes"
+    echo "  sudo $0 --update-github     # Update from GitHub repository"
     echo "  sudo $0 --uninstall         # Remove installation"
     exit 0
 }
@@ -311,17 +314,56 @@ update() {
 
     print_info "Updating existing installation..."
 
-    # Pull latest code (if using git)
-    if [ -d .git ]; then
-        print_info "Pulling latest changes..."
-        git pull || print_warning "Git pull failed, continuing with local files"
-    fi
-
-    # Rebuild and restart
+    # Rebuild and restart with local files
     build_images
     docker compose up -d
 
     print_success "Update complete"
+    exit 0
+}
+
+# =============================================================================
+# Update from GitHub Function
+# =============================================================================
+
+update_github() {
+    print_info "Updating from GitHub..."
+
+    # Check if we're in a git repository
+    if [ ! -d .git ]; then
+        print_error "Not a git repository. Cannot update from GitHub."
+        print_info "If this is a fresh installation, clone the repository first:"
+        print_info "  git clone https://github.com/ruolez/wm.git"
+        exit 1
+    fi
+
+    # Check for .env file
+    if [ ! -f .env ]; then
+        print_error "No existing installation found. Run install first."
+        exit 1
+    fi
+
+    # Stash any local changes to prevent conflicts
+    print_info "Stashing local changes..."
+    git stash --include-untracked 2>/dev/null || true
+
+    # Pull latest from GitHub
+    print_info "Pulling latest changes from GitHub..."
+    if ! git pull origin main; then
+        print_error "Git pull failed. Please resolve conflicts manually."
+        git stash pop 2>/dev/null || true
+        exit 1
+    fi
+
+    # Restore local changes (like .env)
+    git stash pop 2>/dev/null || true
+
+    # Rebuild and restart
+    print_info "Rebuilding images with latest code..."
+    build_images
+    docker compose up -d
+
+    print_success "Update from GitHub complete"
     exit 0
 }
 
@@ -424,6 +466,10 @@ while [[ $# -gt 0 ]]; do
         --update)
             check_root
             update
+            ;;
+        --update-github)
+            check_root
+            update_github
             ;;
         --help|-h)
             show_help
